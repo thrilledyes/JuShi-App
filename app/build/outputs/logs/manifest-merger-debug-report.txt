@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:2:1-28:12
-INJECTED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:2:1-28:12
-INJECTED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:2:1-28:12
-INJECTED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:2:1-28:12
+ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:2:1-37:12
+INJECTED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:2:1-37:12
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\98503\.gradle\caches\transforms-4\4e41cfd688f0c663f7cc7298d2b06c3e\transformed\material-1.12.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.appcompat:appcompat-resources:1.7.0] C:\Users\98503\.gradle\caches\transforms-4\35017cbd5c2688b1657bcf25683797bf\transformed\appcompat-resources-1.7.0\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] C:\Users\98503\.gradle\caches\transforms-4\09713f26a1a089821e93cef5382fe17d\transformed\constraintlayout-2.0.1\AndroidManifest.xml:2:1-11:12
@@ -55,8 +55,8 @@ MERGED from [androidx.annotation:annotation-experimental:1.4.0] C:\Users\98503\.
 	xmlns:android
 		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:2:11-69
 application
-ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:4:5-26:19
-INJECTED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:4:5-26:19
+ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:4:5-35:19
+INJECTED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:4:5-35:19
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\98503\.gradle\caches\transforms-4\4e41cfd688f0c663f7cc7298d2b06c3e\transformed\material-1.12.0\AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.12.0] C:\Users\98503\.gradle\caches\transforms-4\4e41cfd688f0c663f7cc7298d2b06c3e\transformed\material-1.12.0\AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] C:\Users\98503\.gradle\caches\transforms-4\09713f26a1a089821e93cef5382fe17d\transformed\constraintlayout-2.0.1\AndroidManifest.xml:9:5-20
@@ -85,40 +85,58 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\98503\.gradle\cach
 		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:5:9-35
 	android:theme
 		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:8:9-47
-activity#com.jushi.demo.main.ui.imports.ImportTimetableActivity
+activity#com.jushi.demo.main.ui.settings.GeneralSettingsActivity
 ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:9:9-11:40
 	android:exported
 		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:11:13-37
 	android:name
-		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:10:13-63
-activity#com.jushi.demo.main.ui.imports.ConfigureTargetsActivity
+		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:10:13-64
+activity#com.jushi.demo.main.ui.settings.AuthoritySettingsActivity
 ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:12:9-14:40
 	android:exported
 		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:14:13-37
 	android:name
-		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:13:13-64
-activity#com.jushi.demo.main.ui.imports.SelectSourceActivity
+		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:13:13-66
+activity#com.jushi.demo.main.ui.settings.ProfileSettingsActivity
 ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:15:9-17:40
 	android:exported
 		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:17:13-37
 	android:name
-		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:16:13-60
-activity#com.jushi.demo.main.MainActivity
-ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:18:9-25:20
+		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:16:13-64
+activity#com.jushi.demo.main.ui.imports.ImportTimetableActivity
+ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:18:9-20:40
 	android:exported
-		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:20:13-36
+		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:20:13-37
 	android:name
-		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:19:13-41
+		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:19:13-63
+activity#com.jushi.demo.main.ui.imports.ConfigureTargetsActivity
+ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:21:9-23:40
+	android:exported
+		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:23:13-37
+	android:name
+		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:22:13-64
+activity#com.jushi.demo.main.ui.imports.SelectSourceActivity
+ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:24:9-26:40
+	android:exported
+		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:26:13-37
+	android:name
+		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:25:13-60
+activity#com.jushi.demo.main.MainActivity
+ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:27:9-34:20
+	android:exported
+		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:29:13-36
+	android:name
+		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:28:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:21:13-24:29
+ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:30:13-33:29
 action#android.intent.action.MAIN
-ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:22:17-69
+ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:31:17-69
 	android:name
-		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:22:25-66
+		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:31:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:23:17-77
+ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:32:17-77
 	android:name
-		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:23:27-74
+		ADDED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml:32:27-74
 uses-sdk
 INJECTED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\98503\Desktop\1\main\app\src\main\AndroidManifest.xml

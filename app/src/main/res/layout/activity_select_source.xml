@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/colorSurface"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="选择消息来源"
-        android:textColor="@color/wx_blue_dark"
+        android:textColor="?attr/colorOnSurface"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="请选择你希望聚合展示的消息源（可多选）"
-        android:textColor="@color/text_secondary" />
+        android:textColor="@android:color/darker_gray" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSources"
@@ -35,15 +35,17 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="当前未选择消息源"
-        android:textColor="@color/text_primary" />
+        android:textColor="?attr/colorOnSurface" />
 
     <Button
         android:id="@+id/btnSaveSources"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:backgroundTint="@color/wx_blue"
+        android:backgroundTint="@android:color/darker_gray"
         android:text="保存选择"
-        android:textColor="@color/white" />
+        android:textColor="?attr/colorSurface" />
 
 </LinearLayout>
+
+

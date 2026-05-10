@@ -7,16 +7,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jushi.demo.main.BaseActivity;
 import com.jushi.demo.main.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectSourceActivity extends AppCompatActivity {
+public class SelectSourceActivity extends BaseActivity {
     public static final String PREFS_NAME = "jushi_demo_prefs";
     public static final String KEY_SELECTED_SOURCE_IDS = "selected_source_ids";
     public static final String KEY_SOURCE_TARGETS_FORMATTED = "source_targets_formatted";

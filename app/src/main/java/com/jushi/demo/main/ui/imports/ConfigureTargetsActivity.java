@@ -1,17 +1,17 @@
 package com.jushi.demo.main.ui.imports;
 
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import com.jushi.demo.main.BaseActivity;
 import com.jushi.demo.main.R;
 
-public class ConfigureTargetsActivity extends AppCompatActivity {
+public class ConfigureTargetsActivity extends BaseActivity {
     private static final String CHAT_HINT = "每行填写一个群聊名称";
     private static final String COURSE_HINT = "每行填写一个课程名称";
 
@@ -31,14 +31,12 @@ public class ConfigureTargetsActivity extends AppCompatActivity {
 
         parseIntentData();
         buildInputBlocks();
-
         btnSave.setOnClickListener(v -> saveTargets());
     }
 
     private void parseIntentData() {
         String idsRaw = getIntent().getStringExtra(SelectSourceActivity.EXTRA_SELECTED_SOURCE_IDS);
         String namesRaw = getIntent().getStringExtra(SelectSourceActivity.EXTRA_SELECTED_SOURCE_NAMES);
-
         sourceIds = splitCsv(idsRaw);
         sourceNames = splitCsv(namesRaw);
     }
@@ -74,7 +72,7 @@ public class ConfigureTargetsActivity extends AppCompatActivity {
             TextView title = new TextView(this);
             title.setText(sourceName);
             title.setTextSize(17f);
-            title.setTextColor(getColor(R.color.wx_blue_dark));
+            title.setTextColor(resolveColorOnSurface());
             title.setPadding(0, 20, 0, 8);
             container.addView(title);
 
@@ -97,6 +95,12 @@ public class ConfigureTargetsActivity extends AppCompatActivity {
         return "wechat".equals(sourceId) || "wecom".equals(sourceId) || "qq".equals(sourceId);
     }
 
+    private int resolveColorOnSurface() {
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true);
+        return typedValue.data;
+    }
+
     private void saveTargets() {
         StringBuilder formatted = new StringBuilder();
 
@@ -105,22 +109,17 @@ public class ConfigureTargetsActivity extends AppCompatActivity {
             if (input == null) {
                 continue;
             }
-
             String raw = input.getText().toString().trim();
             if (raw.isEmpty()) {
                 continue;
             }
-
             String[] lines = raw.split("\\n");
             for (String line : lines) {
                 String value = line.trim();
                 if (value.isEmpty()) {
                     continue;
                 }
-                formatted.append(sourceNames[i])
-                        .append("群聊或课程名称：")
-                        .append(value)
-                        .append("\n");
+                formatted.append(sourceNames[i]).append("群聊或课程名称：").append(value).append("\n");
             }
         }
 
