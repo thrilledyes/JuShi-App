@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.JuShiDemo" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/wx_blue</item>
+        <item name="colorPrimaryVariant">@color/wx_blue_dark</item>
+        <item name="colorSecondary">@color/wx_blue</item>
+        <item name="colorSecondaryVariant">@color/wx_blue_dark</item>
+        <item name="android:statusBarColor">@color/wx_blue_dark</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:colorBackground">@color/white</item>
+        <item name="colorSurface">@color/white</item>
+    </style>
+</resources>

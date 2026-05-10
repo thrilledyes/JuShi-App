@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">聚事</string>
+    <string name="toolbar">工具栏</string>
+    <string name="import_action">导入</string>
+    <string name="nav_todo">待办</string>
+    <string name="nav_timetable">课表</string>
+    <string name="nav_message">消息</string>
+    <string name="nav_settings">设置</string>
+    <string name="import_menu_select_source">⨁消息源</string>
+    <string name="import_menu_timetable">⨁课表</string>
+    <string name="import_timetable_title">导入课表</string>
+    <string name="import_timetable_placeholder">导入课表页面（占位）</string>
+</resources>

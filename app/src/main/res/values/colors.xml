@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="wx_blue">#1F6BFF</color>
+    <color name="wx_blue_dark">#1956CC</color>
+    <color name="wx_blue_light">#EAF2FF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="text_primary">#1F2329</color>
+    <color name="text_secondary">#5C6675</color>
+</resources>
