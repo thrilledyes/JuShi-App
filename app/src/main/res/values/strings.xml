@@ -7,8 +7,26 @@
     <string name="nav_timetable">课表</string>
     <string name="nav_message">消息</string>
     <string name="nav_settings">设置</string>
-    <string name="import_menu_select_source">⨁消息源</string>
-    <string name="import_menu_timetable">⨁课表</string>
+    <string name="import_menu_select_source">选择消息源</string>
+    <string name="import_menu_timetable">导入课表</string>
     <string name="import_timetable_title">导入课表</string>
     <string name="import_timetable_placeholder">导入课表页面（占位）</string>
+
+    <string name="settings_section_profile">个人资料</string>
+    <string name="settings_section_authority">权限设置</string>
+    <string name="settings_section_general">通用设置</string>
+    <string name="settings_font_size_title">字体大小</string>
+    <string name="settings_font_weight_title">字体粗细</string>
+    <string name="settings_theme_title">应用主题</string>
+    <string name="settings_font_size_small">小</string>
+    <string name="settings_font_size_normal">标准</string>
+    <string name="settings_font_size_large">大</string>
+    <string name="settings_font_weight_normal">标准</string>
+    <string name="settings_font_weight_bold">加粗</string>
+    <string name="settings_theme_system">跟随系统</string>
+    <string name="settings_theme_light">浅色模式</string>
+    <string name="settings_theme_dark">深色模式</string>
+    <string name="settings_saved">设置已保存</string>
+    <string name="settings_profile_placeholder">个人资料页面（静态占位）</string>
+    <string name="settings_authority_placeholder">权限设置页面（静态占位）</string>
 </resources>

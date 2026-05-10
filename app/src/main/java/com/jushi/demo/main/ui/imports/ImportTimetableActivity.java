@@ -2,11 +2,10 @@ package com.jushi.demo.main.ui.imports;
 
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import com.jushi.demo.main.BaseActivity;
 import com.jushi.demo.main.R;
 
-public class ImportTimetableActivity extends AppCompatActivity {
+public class ImportTimetableActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

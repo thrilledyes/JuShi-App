@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/colorSurface"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="24dp">
@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/import_timetable_title"
-        android:textColor="@color/text_primary"
+        android:textColor="?attr/colorOnSurface"
         android:textSize="22sp"
         android:textStyle="bold" />
 
@@ -20,7 +20,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/import_timetable_placeholder"
-        android:textColor="@color/text_secondary"
+        android:textColor="@android:color/darker_gray"
         android:textSize="16sp" />
 
 </LinearLayout>
+
+

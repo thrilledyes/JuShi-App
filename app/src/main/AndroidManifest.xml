@@ -7,6 +7,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.JuShiDemo">
         <activity
+            android:name=".ui.settings.GeneralSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.settings.AuthoritySettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.settings.ProfileSettingsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.imports.ImportTimetableActivity"
             android:exported="false" />
         <activity
