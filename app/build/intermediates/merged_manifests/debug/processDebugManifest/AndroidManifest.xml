@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="24"
-        android:targetSdkVersion="34" />
+        android:targetSdkVersion="36" />
 
     <permission
         android:name="com.jushi.demo.uc01.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"

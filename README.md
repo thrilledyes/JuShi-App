@@ -15,6 +15,85 @@
 
 ---
 
+## 环境配置
+
+### 1. 系统要求
+
+| 项目 | 要求 |
+|------|------|
+| JDK | 17（项目使用 JavaVersion.VERSION_17） |
+| Android SDK | compileSdk 36，需安装 SDK Platform 36 |
+| Android Studio | 推荐最新稳定版（内置 Gradle Wrapper，无需单独安装 Gradle） |
+| 操作系统 | Windows / macOS / Linux 均可 |
+
+### 2. ANDROID_HOME 环境变量配置
+
+Gradle 构建依赖此变量定位 Android SDK 路径。
+
+**Windows（PowerShell，管理员权限）：**
+
+```powershell
+[System.Environment]::SetEnvironmentVariable("ANDROID_HOME", "你的SDK路径", "User")
+```
+
+默认路径通常是 `C:\Users\<用户名>\AppData\Local\Android\Sdk`，自定义安装的请替换为实际路径。
+
+**macOS / Linux（添加到 `~/.bashrc` 或 `~/.zshrc`）：**
+
+```bash
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+```
+
+然后执行 `source ~/.bashrc` 或 `source ~/.zshrc` 生效。
+
+设置后需**重启终端**才能生效，可用以下命令验证：
+
+```bash
+echo $ANDROID_HOME        # Linux/macOS
+echo %ANDROID_HOME%       # Windows CMD
+echo $env:ANDROID_HOME    # Windows PowerShell
+```
+
+### 3. local.properties 说明
+
+- `local.properties` 已加入 `.gitignore`，不会被提交到版本控制
+- 如果 `ANDROID_HOME` 环境变量已正确设置，Gradle 会自动使用该路径，无需手动创建 `local.properties`
+- 如需手动指定，可创建 `local.properties` 并写入 `sdk.dir=你的SDK路径`（Windows 路径需转义反斜杠，如 `sdk.dir=C\:\\Android\\Sdk`）
+
+---
+
+## 构建与运行
+
+本项目使用 **Android Studio** 进行构建和运行，所有操作均为可视化界面操作。
+
+### 1. 打开项目
+
+1. 启动 Android Studio
+2. 选择 `Open`，浏览到项目根目录（`E:/Macrosoft/`）
+3. 等待 Gradle 同步完成（首次同步需要下载依赖，耗时较长）
+
+### 2. 运行应用
+
+1. 连接 Android 真机（开启开发者选项和 USB 调试）或启动 Android 模拟器
+2. 在 Android Studio 顶部工具栏选择目标设备
+3. 点击 **Run** 按钮（绿色三角形，或快捷键 `Shift+F10`）
+4. 应用将自动编译、安装并启动
+
+### 3. 构建 APK
+
+1. 菜单栏选择 `Build` → `Build Bundle(s) / APK(s)` → `Build APK(s)`
+2. 构建完成后，点击右下角通知中的 `locate` 可直接打开产物目录
+3. APK 位于 `app/build/outputs/apk/debug/` 或 `app/build/outputs/apk/release/`
+
+### 4. 常见问题
+
+- **Gradle 同步失败**：检查 `ANDROID_HOME` 环境变量是否正确设置，网络是否能访问阿里云 Maven 镜像
+- **SDK 找不到**：确认 SDK Platform 36 已安装，通过 `File` → `Settings` → `Languages & Frameworks` → `Android SDK` 检查
+- **JDK 版本不匹配**：项目要求 JDK 17，通过 `File` → `Project Structure` → `SDK Location` 确认
+
+---
+
 ## 目录结构
 
 ```
