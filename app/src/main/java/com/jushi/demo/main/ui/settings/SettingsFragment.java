@@ -1,5 +1,6 @@
 package com.jushi.demo.main.ui.settings;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,5 +19,16 @@ public class SettingsFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_settings, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        view.findViewById(R.id.itemProfile).setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), ProfileSettingsActivity.class)));
+        view.findViewById(R.id.itemAuthority).setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), AuthoritySettingsActivity.class)));
+        view.findViewById(R.id.itemGeneral).setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), GeneralSettingsActivity.class)));
     }
 }

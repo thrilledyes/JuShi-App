@@ -23,6 +23,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.JuShiDemo" >
         <activity
+            android:name="com.jushi.demo.main.ui.settings.GeneralSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.jushi.demo.main.ui.settings.AuthoritySettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.jushi.demo.main.ui.settings.ProfileSettingsActivity"
+            android:exported="false" />
+        <activity
             android:name="com.jushi.demo.main.ui.imports.ImportTimetableActivity"
             android:exported="false" />
         <activity
