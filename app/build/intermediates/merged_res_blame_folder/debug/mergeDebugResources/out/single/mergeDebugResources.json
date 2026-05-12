@@ -4,70 +4,6 @@
         "source": "com.jushi.demo.main.app-main-34:/layout/activity_settings_authority.xml"
     },
     {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\layout_fragment_timetable.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\layout\\fragment_timetable.xml"
-    },
-    {
-        "merged": "com.jushi.demo.main.app-debug-32:/layout_fragment_settings.xml.flat",
-        "source": "com.jushi.demo.main.app-main-34:/layout/fragment_settings.xml"
-    },
-    {
-        "merged": "com.jushi.demo.main.app-debug-32:/layout_activity_configure_targets.xml.flat",
-        "source": "com.jushi.demo.main.app-main-34:/layout/activity_configure_targets.xml"
-    },
-    {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\layout_activity_settings_authority.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\layout\\activity_settings_authority.xml"
-    },
-    {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\layout_fragment_todo.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\layout\\fragment_todo.xml"
-    },
-    {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\color_bottom_nav_item_colors.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\color\\bottom_nav_item_colors.xml"
-    },
-    {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\layout_activity_configure_targets.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\layout\\activity_configure_targets.xml"
-    },
-    {
-        "merged": "com.jushi.demo.main.app-debug-32:/layout_activity_settings_profile.xml.flat",
-        "source": "com.jushi.demo.main.app-main-34:/layout/activity_settings_profile.xml"
-    },
-    {
-        "merged": "com.jushi.demo.main.app-debug-32:/layout_activity_main.xml.flat",
-        "source": "com.jushi.demo.main.app-main-34:/layout/activity_main.xml"
-    },
-    {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\layout_item_source.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\layout\\item_source.xml"
-    },
-    {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\layout_activity_settings_general.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\layout\\activity_settings_general.xml"
-    },
-    {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\layout_activity_import_timetable.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\layout\\activity_import_timetable.xml"
-    },
-    {
-        "merged": "com.jushi.demo.main.app-debug-32:/layout_fragment_message.xml.flat",
-        "source": "com.jushi.demo.main.app-main-34:/layout/fragment_message.xml"
-    },
-    {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\layout_activity_select_source.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\layout\\activity_select_source.xml"
-    },
-    {
-        "merged": "com.jushi.demo.main.app-debug-32:/layout_activity_import_timetable.xml.flat",
-        "source": "com.jushi.demo.main.app-main-34:/layout/activity_import_timetable.xml"
-    },
-    {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\menu_menu_bottom_nav.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\menu\\menu_bottom_nav.xml"
-    },
-    {
         "merged": "com.jushi.demo.main.app-debug-32:/layout_fragment_timetable.xml.flat",
         "source": "com.jushi.demo.main.app-main-34:/layout/fragment_timetable.xml"
     },
@@ -76,36 +12,48 @@
         "source": "com.jushi.demo.main.app-main-34:/layout/fragment_todo.xml"
     },
     {
+        "merged": "com.jushi.demo.main.app-debug-32:/layout_fragment_settings.xml.flat",
+        "source": "com.jushi.demo.main.app-main-34:/layout/fragment_settings.xml"
+    },
+    {
         "merged": "com.jushi.demo.main.app-debug-32:/color_bottom_nav_item_colors.xml.flat",
         "source": "com.jushi.demo.main.app-main-34:/color/bottom_nav_item_colors.xml"
     },
     {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\layout_fragment_settings.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\layout\\fragment_settings.xml"
+        "merged": "com.jushi.demo.main.app-debug-32:/layout_activity_configure_targets.xml.flat",
+        "source": "com.jushi.demo.main.app-main-34:/layout/activity_configure_targets.xml"
+    },
+    {
+        "merged": "com.jushi.demo.main.app-debug-32:/layout_activity_settings_profile.xml.flat",
+        "source": "com.jushi.demo.main.app-main-34:/layout/activity_settings_profile.xml"
     },
     {
         "merged": "com.jushi.demo.main.app-debug-32:/layout_activity_settings_general.xml.flat",
         "source": "com.jushi.demo.main.app-main-34:/layout/activity_settings_general.xml"
     },
     {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\layout_fragment_message.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\layout\\fragment_message.xml"
+        "merged": "com.jushi.demo.main.app-debug-32:/layout_activity_main.xml.flat",
+        "source": "com.jushi.demo.main.app-main-34:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.jushi.demo.main.app-debug-32:/menu_menu_bottom_nav.xml.flat",
+        "source": "com.jushi.demo.main.app-main-34:/menu/menu_bottom_nav.xml"
     },
     {
         "merged": "com.jushi.demo.main.app-debug-32:/layout_item_source.xml.flat",
         "source": "com.jushi.demo.main.app-main-34:/layout/item_source.xml"
     },
     {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\layout_activity_settings_profile.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\layout\\activity_settings_profile.xml"
+        "merged": "com.jushi.demo.main.app-debug-32:/layout_fragment_message.xml.flat",
+        "source": "com.jushi.demo.main.app-main-34:/layout/fragment_message.xml"
     },
     {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\layout_activity_main.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\layout\\activity_main.xml"
+        "merged": "com.jushi.demo.main.app-debug-32:/menu_menu_import_actions.xml.flat",
+        "source": "com.jushi.demo.main.app-main-34:/menu/menu_import_actions.xml"
     },
     {
-        "merged": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-debug-32:\\menu_menu_import_actions.xml.flat",
-        "source": "C:\\Users\\98503\\.gradle\\daemon\\8.7\\com.jushi.demo.main.app-main-34:\\menu\\menu_import_actions.xml"
+        "merged": "com.jushi.demo.main.app-debug-32:/layout_activity_import_timetable.xml.flat",
+        "source": "com.jushi.demo.main.app-main-34:/layout/activity_import_timetable.xml"
     },
     {
         "merged": "com.jushi.demo.main.app-debug-32:/layout_activity_select_source.xml.flat",
