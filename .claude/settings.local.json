@@ -13,7 +13,9 @@
       "Bash(git stash *)",
       "Bash(git merge *)",
       "Bash(git push *)",
-      "Bash(powershell *)"
+      "Bash(powershell *)",
+      "Bash(xxd *)",
+      "Bash(./gradlew clean *)"
     ]
   }
 }

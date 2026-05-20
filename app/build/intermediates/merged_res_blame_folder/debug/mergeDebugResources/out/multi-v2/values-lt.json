@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.jushi.demo.main.app-mergeDebugResources-30:/values-lt/values-lt.xml",
+            "outputFile": "com.jushi.demo.main.app-mergeDebugResources-33:/values-lt/values-lt.xml",
             "map": [
                 {
                     "source": "C:\\Users\\eeG\\.gradle\\caches\\transforms-4\\906753b1313d0d6416aa8391cc212691\\transformed\\core-1.13.0\\res\\values-lt\\values-lt.xml",

@@ -4,7 +4,15 @@
     <string name="import_action">导入</string>
     <string name="import_menu_select_source">选择消息源</string>
     <string name="import_menu_timetable">导入课表</string>
-    <string name="import_timetable_placeholder">导入课表页面（占位）</string>
+    <string name="import_timetable_btn_confirm">确认导入</string>
+    <string name="import_timetable_btn_pick">选择课表文件</string>
+    <string name="import_timetable_btn_reselect">重新选择</string>
+    <string name="import_timetable_hint">选择从教务系统导出的课程表文件（.doc或.docx）</string>
+    <string name="import_timetable_parse_error">解析失败: %1$s</string>
+    <string name="import_timetable_parsing">正在解析课表文件…</string>
+    <string name="import_timetable_preview_count">已识别 %1$d 门课程 (%2$s)</string>
+    <string name="import_timetable_saving">正在保存课程数据…</string>
+    <string name="import_timetable_success">已导入 %1$d 门课程</string>
     <string name="import_timetable_title">导入课表</string>
     <string name="nav_message">消息</string>
     <string name="nav_settings">设置</string>
@@ -27,6 +35,11 @@
     <string name="settings_theme_light">浅色模式</string>
     <string name="settings_theme_system">跟随系统</string>
     <string name="settings_theme_title">应用主题</string>
+    <string name="timetable_empty_action">导入课表</string>
+    <string name="timetable_empty_state">暂无课表数据</string>
+    <string name="timetable_next_week">下一周</string>
+    <string name="timetable_prev_week">上一周</string>
+    <string name="timetable_week_label">第%1$d周 (%2$s)</string>
     <string name="toolbar">工具栏</string>
     <style name="Theme.JuShiDemo" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@android:color/holo_blue_dark</item>
