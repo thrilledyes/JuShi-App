@@ -17,6 +17,12 @@ id btnSaveTargets
 id btnToolbar
 id cbSelected
 id emptyState
+id etCourseName
+id etEndPeriod
+id etLocation
+id etStartPeriod
+id etTeacher
+id etWeekRange
 id fragmentContainer
 id generalRoot
 id horizontalScroll
@@ -28,6 +34,7 @@ id nav_message
 id nav_settings
 id nav_timetable
 id nav_todo
+id periodLabelColumn
 id previewContainer
 id rbFontLarge
 id rbFontNormal
@@ -42,6 +49,8 @@ id rgFontWeight
 id rgTheme
 id rvPreview
 id rvSources
+id spDayOfWeek
+id timetableContainer
 id timetableGrid
 id tvFontSizeTitle
 id tvFontWeightTitle
@@ -62,6 +71,7 @@ layout activity_select_source
 layout activity_settings_authority
 layout activity_settings_general
 layout activity_settings_profile
+layout dialog_edit_course
 layout fragment_message
 layout fragment_settings
 layout fragment_timetable

@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.text.Layout;
+import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -23,6 +25,7 @@ public class TimetableGridView extends View {
     private static final float HEADER_HEIGHT_DP = 48;
     private static final float CELL_MIN_WIDTH_DP = 96;
     private static final float ROW_HEIGHT_DP = 82;
+    private static final float ROW_MIN_HEIGHT_DP = 48;
 
     private final TextPaint headerPaint;
     private final TextPaint labelPaint;
@@ -44,6 +47,7 @@ public class TimetableGridView extends View {
     private long semesterStart;
     private String[] dateLabels = new String[7];
     private final Course[][] grid;
+    private boolean showLabelColumn = true;
 
     // Track font metrics for proper clipping
     private final Paint.FontMetrics fmCourseName;
@@ -114,6 +118,11 @@ public class TimetableGridView extends View {
         invalidate();
     }
 
+    public void setShowLabelColumn(boolean show) {
+        this.showLabelColumn = show;
+        requestLayout();
+    }
+
     private void buildGrid() {
         for (int p = 0; p < WeekUtils.MAX_PERIODS; p++) {
             for (int d = 0; d < 7; d++) {
@@ -124,7 +133,8 @@ public class TimetableGridView extends View {
             if (WeekUtils.isActiveInWeek(c, currentWeek)) {
                 int startP = c.getStartPeriod() - 1;
                 int endP = c.getEndPeriod() - 1;
-                int d = c.getDayOfWeek() - 1;
+                int dow = c.getDayOfWeek();
+                int d = dow == 1 ? 6 : dow - 2;
                 if (startP < 0 || d < 0 || d >= 7) continue;
                 endP = Math.min(endP, WeekUtils.MAX_PERIODS - 1);
                 for (int p = startP; p <= endP; p++) {
@@ -136,9 +146,8 @@ public class TimetableGridView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        labelWidth = dpToPx(LABEL_WIDTH_DP);
+        labelWidth = showLabelColumn ? dpToPx(LABEL_WIDTH_DP) : 0;
         headerHeight = dpToPx(HEADER_HEIGHT_DP);
-        rowHeight = dpToPx(ROW_HEIGHT_DP);
 
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
@@ -151,13 +160,19 @@ public class TimetableGridView extends View {
         cellWidth = Math.max(minCell, availWidth / 7f);
 
         totalWidth = (int) (labelWidth + 7 * cellWidth);
-        totalHeight = (int) (headerHeight + WeekUtils.MAX_PERIODS * rowHeight);
 
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        if ((heightMode == MeasureSpec.EXACTLY || heightMode == MeasureSpec.AT_MOST)
-                && heightSize > totalHeight) {
-            totalHeight = heightSize;
+        float minRow = dpToPx(ROW_MIN_HEIGHT_DP);
+        float defaultRow = dpToPx(ROW_HEIGHT_DP);
+
+        if (heightMode == MeasureSpec.EXACTLY || heightMode == MeasureSpec.AT_MOST) {
+            float calcRow = (heightSize - headerHeight) / (float) WeekUtils.MAX_PERIODS;
+            rowHeight = Math.max(minRow, Math.max(defaultRow, calcRow));
+            totalHeight = (int) (headerHeight + WeekUtils.MAX_PERIODS * rowHeight);
+        } else {
+            rowHeight = defaultRow;
+            totalHeight = (int) (headerHeight + WeekUtils.MAX_PERIODS * rowHeight);
         }
 
         setMeasuredDimension(totalWidth, totalHeight);
@@ -170,10 +185,12 @@ public class TimetableGridView extends View {
         canvas.drawRect(0, 0, totalWidth, totalHeight, surfacePaint);
 
         // Corner cell
-        canvas.drawRect(0, 0, labelWidth, headerHeight, headerBgPaint);
+        if (showLabelColumn) {
+            canvas.drawRect(0, 0, labelWidth, headerHeight, headerBgPaint);
+        }
 
         // Header row: day names + dates
-        String[] dayNames = {"周日", "周一", "周二", "周三", "周四", "周五", "周六"};
+        String[] dayNames = {"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
         for (int d = 0; d < 7; d++) {
             float left = labelWidth + d * cellWidth;
             canvas.drawRect(left, 0, left + cellWidth, headerHeight, headerBgPaint);
@@ -188,18 +205,20 @@ public class TimetableGridView extends View {
         }
 
         // Period label column
-        for (int p = 0; p < WeekUtils.MAX_PERIODS; p++) {
-            float top = headerHeight + p * rowHeight;
-            float bottom = top + rowHeight;
+        if (showLabelColumn) {
+            for (int p = 0; p < WeekUtils.MAX_PERIODS; p++) {
+                float top = headerHeight + p * rowHeight;
+                float bottom = top + rowHeight;
 
-            Paint bg = p % 2 == 0 ? labelBgPaint : labelBgAltPaint;
-            canvas.drawRect(0, top, labelWidth, bottom, bg);
+                Paint bg = p % 2 == 0 ? labelBgPaint : labelBgAltPaint;
+                canvas.drawRect(0, top, labelWidth, bottom, bg);
 
-            int period = p + 1;
-            String periodLabel = period + "\n" + WeekUtils.getPeriodTimeText(period);
-            float cx = labelWidth / 2;
-            float cy = top + rowHeight / 2 - dpToPx(2);
-            drawTextCentered(canvas, periodLabel, cx, cy, labelPaint);
+                int period = p + 1;
+                String periodLabel = period + "\n" + WeekUtils.getPeriodTimeText(period);
+                float cx = labelWidth / 2;
+                float cy = top + rowHeight / 2 - dpToPx(2);
+                drawTextCentered(canvas, periodLabel, cx, cy, labelPaint);
+            }
         }
 
         // Grid lines
@@ -241,41 +260,63 @@ public class TimetableGridView extends View {
 
         float pad = dpToPx(5);
         float textLeft = left + pad;
-        float maxWidth = right - textLeft - pad;
-        float lineH = (fmCourseName.descent - fmCourseName.ascent) + dpToPx(1);
+        float textWidth = right - textLeft - pad;
+        float curY = top + dpToPx(4);
+        float maxY = bottom - dpToPx(3);
         float detailLineH = (fmCourseDetail.descent - fmCourseDetail.ascent) + dpToPx(1);
 
-        // Start drawing from top, leaving padding
-        float curY = top + dpToPx(5) - fmCourseName.ascent;
-        float maxY = bottom - dpToPx(3);
-
-        // Course name
+        // Course name with text wrapping via StaticLayout
         String name = course.getCourseName();
         if (name != null && !name.isEmpty() && curY < maxY) {
+            StaticLayout nameLayout = StaticLayout.Builder.obtain(
+                    name, 0, name.length(), courseNamePaint, (int) textWidth)
+                    .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                    .setMaxLines(3)
+                    .build();
+            int lines = Math.min(nameLayout.getLineCount(), 3);
+            float nameHeight = lines * (fmCourseName.descent - fmCourseName.ascent + dpToPx(1));
+            if (curY + nameHeight > maxY) {
+                lines = (int) ((maxY - curY) / (fmCourseName.descent - fmCourseName.ascent + dpToPx(1)));
+                if (lines <= 0) lines = 1;
+                nameHeight = lines * (fmCourseName.descent - fmCourseName.ascent + dpToPx(1));
+            }
             canvas.save();
-            canvas.clipRect(textLeft, top, right - pad, maxY);
-            canvas.drawText(name, textLeft, curY, courseNamePaint);
+            canvas.clipRect(textLeft, curY, right - pad, curY + nameHeight);
+            canvas.translate(textLeft, curY);
+            nameLayout.draw(canvas);
             canvas.restore();
-            curY += lineH + dpToPx(1);
+            curY += nameHeight + dpToPx(2);
         }
 
-        // Teacher
-        if (course.getTeacher() != null && !course.getTeacher().isEmpty() && curY < maxY) {
+        // Teacher (single line, clipped)
+        String teacher = course.getTeacher();
+        if (teacher != null && !teacher.isEmpty() && curY + detailLineH < maxY) {
             canvas.save();
-            canvas.clipRect(textLeft, top, right - pad, maxY);
-            curY += -fmCourseDetail.ascent;
-            canvas.drawText(course.getTeacher(), textLeft, curY, courseDetailPaint);
+            canvas.clipRect(textLeft, curY, right - pad, curY + detailLineH);
+            canvas.drawText(teacher, textLeft, curY - fmCourseDetail.ascent, courseDetailPaint);
             canvas.restore();
-            curY += detailLineH;
+            curY += detailLineH + dpToPx(1);
         }
 
-        // Location
-        if (course.getLocation() != null && !course.getLocation().isEmpty() && curY < maxY) {
-            canvas.save();
-            canvas.clipRect(textLeft, top, right - pad, maxY);
-            curY += -fmCourseDetail.ascent;
-            canvas.drawText(course.getLocation(), textLeft, curY, courseDetailPaint);
-            canvas.restore();
+        // Location (single line with wrapping via StaticLayout if long)
+        String location = course.getLocation();
+        if (location != null && !location.isEmpty() && curY < maxY) {
+            float remainingH = maxY - curY;
+            if (remainingH > dpToPx(10)) {
+                StaticLayout locLayout = StaticLayout.Builder.obtain(
+                        location, 0, location.length(), courseDetailPaint, (int) textWidth)
+                        .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                        .setMaxLines(2)
+                        .build();
+                int locLines = Math.min(locLayout.getLineCount(), 2);
+                float locHeight = locLines * detailLineH;
+                if (curY + locHeight > maxY) locHeight = maxY - curY;
+                canvas.save();
+                canvas.clipRect(textLeft, curY, right - pad, curY + locHeight);
+                canvas.translate(textLeft, curY);
+                locLayout.draw(canvas);
+                canvas.restore();
+            }
         }
     }
 
@@ -287,8 +328,7 @@ public class TimetableGridView extends View {
         float startY = cy - totalHeight / 2 - fm.ascent;
 
         for (int i = 0; i < lines.length; i++) {
-            float w = paint.measureText(lines[i]);
-            canvas.drawText(lines[i], cx - w / 2, startY + i * lineHeight, paint);
+            canvas.drawText(lines[i], cx, startY + i * lineHeight, paint);
         }
     }
 

@@ -21,10 +21,11 @@ import java.util.List;
 public class TimetableFragment extends Fragment {
 
     private TimetableGridView gridView;
+    private PeriodLabelView periodLabelView;
     private TextView tvWeekInfo;
     private View emptyState;
     private View weekSelector;
-    private View horizontalScroll;
+    private View timetableContainer;
 
     private int currentWeek;
     private long semesterStart;
@@ -42,12 +43,15 @@ public class TimetableFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         gridView = view.findViewById(R.id.timetableGrid);
+        periodLabelView = view.findViewById(R.id.periodLabelColumn);
         tvWeekInfo = view.findViewById(R.id.tvWeekInfo);
         emptyState = view.findViewById(R.id.emptyState);
         weekSelector = view.findViewById(R.id.weekSelector);
-        horizontalScroll = view.findViewById(R.id.horizontalScroll);
+        timetableContainer = view.findViewById(R.id.timetableContainer);
         TextView btnPrevWeek = view.findViewById(R.id.btnPrevWeek);
         TextView btnNextWeek = view.findViewById(R.id.btnNextWeek);
+
+        gridView.setShowLabelColumn(false);
 
         semesterStart = WeekUtils.getSemesterStart(requireContext());
         currentWeek = WeekUtils.getCurrentWeek(requireContext());
@@ -75,11 +79,11 @@ public class TimetableFragment extends Fragment {
                 if (courses.isEmpty()) {
                     emptyState.setVisibility(View.VISIBLE);
                     weekSelector.setVisibility(View.GONE);
-                    horizontalScroll.setVisibility(View.GONE);
+                    timetableContainer.setVisibility(View.GONE);
                 } else {
                     emptyState.setVisibility(View.GONE);
                     weekSelector.setVisibility(View.VISIBLE);
-                    horizontalScroll.setVisibility(View.VISIBLE);
+                    timetableContainer.setVisibility(View.VISIBLE);
 
                     gridView.setCourses(courses);
                     updateWeekDisplay();

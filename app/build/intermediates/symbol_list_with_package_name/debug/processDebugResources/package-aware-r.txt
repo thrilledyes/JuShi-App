@@ -3179,6 +3179,12 @@ id endToStart
 id enterAlways
 id enterAlwaysCollapsed
 id escape
+id etCourseName
+id etEndPeriod
+id etLocation
+id etStartPeriod
+id etTeacher
+id etWeekRange
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
@@ -3349,6 +3355,7 @@ id path
 id pathRelative
 id peekHeight
 id percent
+id periodLabelColumn
 id pin
 id pooling_container_listener_holder_tag
 id position
@@ -3415,6 +3422,7 @@ id snackbar_action
 id snackbar_text
 id snap
 id snapMargins
+id spDayOfWeek
 id spacer
 id special_effects_controller_view_tag
 id spline
@@ -3467,6 +3475,7 @@ id textinput_placeholder
 id textinput_prefix_text
 id textinput_suffix_text
 id time
+id timetableContainer
 id timetableGrid
 id title
 id titleDividerNoCustom
@@ -3652,6 +3661,7 @@ layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
+layout dialog_edit_course
 layout fragment_message
 layout fragment_settings
 layout fragment_timetable

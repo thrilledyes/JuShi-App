@@ -16,12 +16,12 @@ public class WeekUtils {
     private static final String KEY_SEMESTER_START = "semester_start_date";
     private static final String KEY_CURRENT_WEEK = "current_week";
 
-    // Default: Feb 17, 2026 (approximate spring semester start, a Monday)
+    // Default: Feb 16, 2026 (Monday of spring semester start week)
     private static final long DEFAULT_SEMESTER_START = getDefaultSemesterStart();
 
     private static long getDefaultSemesterStart() {
         Calendar cal = Calendar.getInstance();
-        cal.set(2026, Calendar.FEBRUARY, 17, 0, 0, 0);
+        cal.set(2026, Calendar.FEBRUARY, 16, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
         return cal.getTimeInMillis();
     }

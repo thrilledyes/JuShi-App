@@ -1,5 +1,6 @@
 package com.jushi.demo.main.ui.imports;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -7,9 +8,13 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +46,7 @@ public class ImportTimetableActivity extends BaseActivity {
 
     private List<Course> parsedCourses;
     private String fileName;
+    private CoursePreviewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +134,85 @@ public class ImportTimetableActivity extends BaseActivity {
         previewContainer.setVisibility(View.VISIBLE);
         actionButtons.setVisibility(View.VISIBLE);
 
-        rvPreview.setAdapter(new CoursePreviewAdapter(parsedCourses));
+        adapter = new CoursePreviewAdapter(parsedCourses, position -> showEditDialog(position));
+        rvPreview.setAdapter(adapter);
+    }
+
+    private void showEditDialog(int position) {
+        Course course = parsedCourses.get(position);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_course, null);
+
+        EditText etCourseName = dialogView.findViewById(R.id.etCourseName);
+        EditText etTeacher = dialogView.findViewById(R.id.etTeacher);
+        EditText etLocation = dialogView.findViewById(R.id.etLocation);
+        Spinner spDayOfWeek = dialogView.findViewById(R.id.spDayOfWeek);
+        EditText etStartPeriod = dialogView.findViewById(R.id.etStartPeriod);
+        EditText etEndPeriod = dialogView.findViewById(R.id.etEndPeriod);
+        EditText etWeekRange = dialogView.findViewById(R.id.etWeekRange);
+
+        // Day of week spinner: Monday-first, values match Course.dayOfWeek
+        String[] dayLabels = {"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
+        int[] dayValues = {2, 3, 4, 5, 6, 7, 1};
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, dayLabels);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spDayOfWeek.setAdapter(spinnerAdapter);
+
+        // Populate fields
+        etCourseName.setText(course.getCourseName());
+        etTeacher.setText(course.getTeacher());
+        etLocation.setText(course.getLocation());
+
+        int dow = course.getDayOfWeek();
+        for (int i = 0; i < dayValues.length; i++) {
+            if (dayValues[i] == dow) {
+                spDayOfWeek.setSelection(i);
+                break;
+            }
+        }
+
+        etStartPeriod.setText(String.valueOf(course.getStartPeriod()));
+        etEndPeriod.setText(String.valueOf(course.getEndPeriod()));
+        etWeekRange.setText(course.getWeekRange());
+
+        new AlertDialog.Builder(this)
+                .setTitle("编辑课程")
+                .setView(dialogView)
+                .setPositiveButton("确定", (dialog, which) -> {
+                    String name = etCourseName.getText().toString().trim();
+                    if (name.isEmpty()) {
+                        Toast.makeText(this, "课程名称不能为空", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    int startP, endP;
+                    try {
+                        startP = Integer.parseInt(etStartPeriod.getText().toString().trim());
+                        endP = Integer.parseInt(etEndPeriod.getText().toString().trim());
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(this, "节次请输入数字", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (startP < 1 || startP > WeekUtils.MAX_PERIODS
+                            || endP < 1 || endP > WeekUtils.MAX_PERIODS) {
+                        Toast.makeText(this, "节次范围: 1-" + WeekUtils.MAX_PERIODS, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    course.setCourseName(name);
+                    course.setTeacher(etTeacher.getText().toString().trim());
+                    course.setLocation(etLocation.getText().toString().trim());
+                    course.setDayOfWeek(dayValues[spDayOfWeek.getSelectedItemPosition()]);
+                    course.setStartPeriod(startP);
+                    course.setEndPeriod(endP);
+                    course.setWeekRange(etWeekRange.getText().toString().trim());
+
+                    adapter.notifyItemChanged(position);
+                    Toast.makeText(this, "已更新", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("取消", null)
+                .show();
     }
 
     private void saveCourses() {
@@ -168,11 +252,19 @@ public class ImportTimetableActivity extends BaseActivity {
         return name != null ? name : "unknown";
     }
 
+    interface OnCourseClickListener {
+        void onCourseClick(int position);
+    }
+
     private static class CoursePreviewAdapter extends RecyclerView.Adapter<CoursePreviewAdapter.ViewHolder> {
 
         private final List<Course> courses;
+        private final OnCourseClickListener listener;
 
-        CoursePreviewAdapter(List<Course> courses) { this.courses = courses; }
+        CoursePreviewAdapter(List<Course> courses, OnCourseClickListener listener) {
+            this.courses = courses;
+            this.listener = listener;
+        }
 
         @Override
         public ViewHolder onCreateViewHolder(android.view.ViewGroup parent, int viewType) {
@@ -206,7 +298,6 @@ public class ImportTimetableActivity extends BaseActivity {
             String timeRange = WeekUtils.getPeriodTimeText(c.getStartPeriod());
             if (c.getEndPeriod() != c.getStartPeriod()) {
                 String endTime = WeekUtils.getPeriodTimeText(c.getEndPeriod());
-                // Extract just the end time from the range
                 timeRange = timeRange.split("~")[0] + "~" + endTime.split("~")[1];
             }
 
@@ -222,6 +313,10 @@ public class ImportTimetableActivity extends BaseActivity {
                 sb.append("  |  ").append(c.getLocation());
             sb.append("  |  第").append(c.getWeekRange()).append("周");
             holder.line2.setText(sb.toString());
+
+            holder.itemView.setOnClickListener(v -> {
+                if (listener != null) listener.onCourseClick(position);
+            });
         }
 
         @Override

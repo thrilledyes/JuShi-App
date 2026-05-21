@@ -113,8 +113,8 @@ public class DocxParser {
                 return result;
             }
 
-            Map<Integer, Integer> gridColToDay = buildGridColDayMap((Element) rows.item(0));
-            if (gridColToDay.isEmpty()) {
+            Map<Integer, Integer> cellIndexToDay = buildCellIndexDayMap((Element) rows.item(0));
+            if (cellIndexToDay.isEmpty()) {
                 result.error = "无法解析课表表头";
                 return result;
             }
@@ -128,39 +128,39 @@ public class DocxParser {
                 if (periods == null) continue;
 
                 List<Element> cells = getChildElementsNS(row, NS_W, "tc");
-                int gridCol = 0;
-                for (int colIdx = 0; colIdx < cells.size(); colIdx++) {
+                // Start from colIdx 1 (skip period label at cell[0])
+                for (int colIdx = 1; colIdx < cells.size(); colIdx++) {
                     Element cell = cells.get(colIdx);
-                    int gs = getCellGridSpan(cell);
-                    Integer day = gridColToDay.get(gridCol);
-                    gridCol += gs;
-
+                    Integer day = cellIndexToDay.get(colIdx);
                     if (day == null || day == 0) continue;
 
                     String vMerge = getVMergeVal(cell);
+                    String cellText = extractCellText(cell);
 
                     if ("restart".equals(vMerge)) {
-                        String cellText = extractCellText(cell);
                         if (!cellText.isEmpty()) {
                             Course course = parseCourseFromCellText(cellText, day, periods[0], periods[0], courses.size());
                             if (course != null) {
-                                vMergeMap.put(gridCol, course); // key by gridCol
+                                vMergeMap.put(colIdx, course);
                                 courses.add(course);
                             }
                         }
                     } else if (vMerge != null) {
-                        Course pending = vMergeMap.get(gridCol);
+                        Course pending = vMergeMap.get(colIdx);
+                        if (pending != null) {
+                            pending.setEndPeriod(periods[1]);
+                        }
+                    } else if (cellText.isEmpty()) {
+                        // No vMerge tag but cell is empty — check if previous row had a course here
+                        Course pending = vMergeMap.get(colIdx);
                         if (pending != null) {
                             pending.setEndPeriod(periods[1]);
                         }
                     } else {
-                        vMergeMap.remove(gridCol);
-                        String cellText = extractCellText(cell);
-                        if (!cellText.isEmpty()) {
-                            Course course = parseCourseFromCellText(cellText, day, periods[0], periods[1], courses.size());
-                            if (course != null) {
-                                courses.add(course);
-                            }
+                        vMergeMap.remove(colIdx);
+                        Course course = parseCourseFromCellText(cellText, day, periods[0], periods[1], courses.size());
+                        if (course != null) {
+                            courses.add(course);
                         }
                     }
                 }
@@ -244,29 +244,19 @@ public class DocxParser {
         return false;
     }
 
-    // Build mapping: gridCol index → dayOfWeek (using gridSpan from header)
-    private static Map<Integer, Integer> buildGridColDayMap(Element headerRow) {
+    // Map header cell index → dayOfWeek (using physical cell order, ignoring gridSpan)
+    private static Map<Integer, Integer> buildCellIndexDayMap(Element headerRow) {
         Map<Integer, Integer> map = new HashMap<>();
         List<Element> cells = getChildElementsNS(headerRow, NS_W, "tc");
-        int gridCol = 0;
 
-        for (Element cell : cells) {
-            int gs = getCellGridSpan(cell);
-            String text = extractCellText(cell).trim();
-
-            Integer day = null;
+        for (int i = 0; i < cells.size(); i++) {
+            String text = extractCellText(cells.get(i)).trim();
             for (Map.Entry<String, Integer> entry : DAY_NAME_MAP.entrySet()) {
                 if (text.equals(entry.getKey()) || text.contains(entry.getKey())) {
-                    day = entry.getValue();
+                    map.put(i, entry.getValue());
                     break;
                 }
             }
-
-            // Map each grid column this cell spans to the day
-            for (int j = 0; j < gs; j++) {
-                map.put(gridCol + j, day != null ? day : 0);
-            }
-            gridCol += gs;
         }
         return map;
     }
@@ -312,10 +302,21 @@ public class DocxParser {
         Element vMerge = getFirstChildByLocalName(tcPr, "vMerge");
         if (vMerge == null) return null;
 
-        // Try multiple ways to get the val attribute
+        // Try multiple ways to get the val attribute, including direct attribute iteration
         String val = vMerge.getAttributeNS(NS_W, "val");
         if (val == null || val.isEmpty()) val = vMerge.getAttribute("w:val");
         if (val == null || val.isEmpty()) val = vMerge.getAttribute("val");
+        // Fallback: iterate attributes directly (most robust)
+        if (val == null || val.isEmpty()) {
+            org.w3c.dom.NamedNodeMap attrs = vMerge.getAttributes();
+            for (int i = 0; i < attrs.getLength(); i++) {
+                org.w3c.dom.Node attr = attrs.item(i);
+                if ("val".equals(attr.getLocalName())) {
+                    val = attr.getNodeValue();
+                    break;
+                }
+            }
+        }
         if (val == null || val.isEmpty()) return "continue";
         return val;
     }
