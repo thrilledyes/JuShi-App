@@ -113,8 +113,8 @@ public class DocxParser {
                 return result;
             }
 
-            Map<Integer, Integer> cellIndexToDay = buildCellIndexDayMap((Element) rows.item(0));
-            if (cellIndexToDay.isEmpty()) {
+            Map<Integer, Integer> gridColToDay = buildGridColDayMap((Element) rows.item(0));
+            if (gridColToDay.isEmpty()) {
                 result.error = "无法解析课表表头";
                 return result;
             }
@@ -128,10 +128,14 @@ public class DocxParser {
                 if (periods == null) continue;
 
                 List<Element> cells = getChildElementsNS(row, NS_W, "tc");
-                // Start from colIdx 1 (skip period label at cell[0])
-                for (int colIdx = 1; colIdx < cells.size(); colIdx++) {
+                int gridCol = 0;
+                for (int colIdx = 0; colIdx < cells.size(); colIdx++) {
                     Element cell = cells.get(colIdx);
-                    Integer day = cellIndexToDay.get(colIdx);
+                    int gs = getCellGridSpan(cell);
+                    int cellGridCol = gridCol;
+                    Integer day = gridColToDay.get(cellGridCol);
+                    gridCol += gs;
+
                     if (day == null || day == 0) continue;
 
                     String vMerge = getVMergeVal(cell);
@@ -141,26 +145,24 @@ public class DocxParser {
                         if (!cellText.isEmpty()) {
                             Course course = parseCourseFromCellText(cellText, day, periods[0], periods[0], courses.size());
                             if (course != null) {
-                                vMergeMap.put(colIdx, course);
+                                vMergeMap.put(cellGridCol, course);
                                 courses.add(course);
                             }
                         }
                     } else if (vMerge != null) {
-                        Course pending = vMergeMap.get(colIdx);
-                        if (pending != null) {
-                            pending.setEndPeriod(periods[1]);
-                        }
-                    } else if (cellText.isEmpty()) {
-                        // No vMerge tag but cell is empty — check if previous row had a course here
-                        Course pending = vMergeMap.get(colIdx);
+                        // vMerge=continue: extend the course started in a previous row
+                        Course pending = vMergeMap.get(cellGridCol);
                         if (pending != null) {
                             pending.setEndPeriod(periods[1]);
                         }
                     } else {
-                        vMergeMap.remove(colIdx);
-                        Course course = parseCourseFromCellText(cellText, day, periods[0], periods[1], courses.size());
-                        if (course != null) {
-                            courses.add(course);
+                        // No vMerge tag: merge chain ended at this column
+                        vMergeMap.remove(cellGridCol);
+                        if (!cellText.isEmpty()) {
+                            Course course = parseCourseFromCellText(cellText, day, periods[0], periods[1], courses.size());
+                            if (course != null) {
+                                courses.add(course);
+                            }
                         }
                     }
                 }
@@ -244,19 +246,29 @@ public class DocxParser {
         return false;
     }
 
-    // Map header cell index → dayOfWeek (using physical cell order, ignoring gridSpan)
-    private static Map<Integer, Integer> buildCellIndexDayMap(Element headerRow) {
+    // Build mapping: gridCol index → dayOfWeek (using gridSpan from header)
+    private static Map<Integer, Integer> buildGridColDayMap(Element headerRow) {
         Map<Integer, Integer> map = new HashMap<>();
         List<Element> cells = getChildElementsNS(headerRow, NS_W, "tc");
+        int gridCol = 0;
 
-        for (int i = 0; i < cells.size(); i++) {
-            String text = extractCellText(cells.get(i)).trim();
+        for (Element cell : cells) {
+            int gs = getCellGridSpan(cell);
+            String text = extractCellText(cell).trim();
+
+            Integer day = null;
             for (Map.Entry<String, Integer> entry : DAY_NAME_MAP.entrySet()) {
                 if (text.equals(entry.getKey()) || text.contains(entry.getKey())) {
-                    map.put(i, entry.getValue());
+                    day = entry.getValue();
                     break;
                 }
             }
+
+            // Map each grid column this cell spans to the day
+            for (int j = 0; j < gs; j++) {
+                map.put(gridCol + j, day != null ? day : 0);
+            }
+            gridCol += gs;
         }
         return map;
     }
@@ -296,27 +308,43 @@ public class DocxParser {
     }
 
     private static String getVMergeVal(Element cell) {
-        Element tcPr = getFirstChildByLocalName(cell, "tcPr");
-        if (tcPr == null) return null;
-
-        Element vMerge = getFirstChildByLocalName(tcPr, "vMerge");
-        if (vMerge == null) return null;
-
-        // Try multiple ways to get the val attribute, including direct attribute iteration
-        String val = vMerge.getAttributeNS(NS_W, "val");
-        if (val == null || val.isEmpty()) val = vMerge.getAttribute("w:val");
-        if (val == null || val.isEmpty()) val = vMerge.getAttribute("val");
-        // Fallback: iterate attributes directly (most robust)
-        if (val == null || val.isEmpty()) {
-            org.w3c.dom.NamedNodeMap attrs = vMerge.getAttributes();
-            for (int i = 0; i < attrs.getLength(); i++) {
-                org.w3c.dom.Node attr = attrs.item(i);
-                if ("val".equals(attr.getLocalName())) {
-                    val = attr.getNodeValue();
-                    break;
+        // Iterate ALL tcPr children — some documents split attributes
+        // across multiple tcPr elements (e.g. gridSpan in first, vMerge in second)
+        NodeList children = cell.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child.getNodeType() == Node.ELEMENT_NODE
+                    && "tcPr".equals(child.getLocalName())) {
+                Element vMerge = getFirstChildByLocalName((Element) child, "vMerge");
+                if (vMerge != null) {
+                    return extractVMergeVal(vMerge);
                 }
             }
         }
+
+        // Fallback: vMerge as direct child of tc (non-standard but exists)
+        Element vMerge = getFirstChildByLocalName(cell, "vMerge");
+        if (vMerge != null) {
+            return extractVMergeVal(vMerge);
+        }
+
+        return null;
+    }
+
+    private static String extractVMergeVal(Element vMerge) {
+        String val = vMerge.getAttributeNS(NS_W, "val");
+        if (val == null || val.isEmpty()) val = vMerge.getAttribute("w:val");
+        // Fallback: iterate attributes directly (most robust)
+//        if (val == null || val.isEmpty()) {
+//            org.w3c.dom.NamedNodeMap attrs = vMerge.getAttributes();
+//            for (int i = 0; i < attrs.getLength(); i++) {
+//                org.w3c.dom.Node attr = attrs.item(i);
+//                if ("val".equals(attr.getLocalName())) {
+//                    val = attr.getNodeValue();
+//                    break;
+//                }
+//            }
+//        }
         if (val == null || val.isEmpty()) return "continue";
         return val;
     }
