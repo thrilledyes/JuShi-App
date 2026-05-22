@@ -1,5 +1,6 @@
 package com.jushi.demo.main.ui.imports;
 
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.widget.Button;
@@ -65,6 +66,8 @@ public class ConfigureTargetsActivity extends BaseActivity {
 
     private void buildInputBlocks() {
         container.removeAllViews();
+        int surfaceColor = resolveColorOnSurface();
+        float density = getResources().getDisplayMetrics().density;
         for (int i = 0; i < sourceIds.length && i < sourceNames.length; i++) {
             String sourceId = sourceIds[i];
             String sourceName = sourceNames[i];
@@ -72,7 +75,7 @@ public class ConfigureTargetsActivity extends BaseActivity {
             TextView title = new TextView(this);
             title.setText(sourceName);
             title.setTextSize(17f);
-            title.setTextColor(resolveColorOnSurface());
+            title.setTextColor(surfaceColor);
             title.setPadding(0, 20, 0, 8);
             container.addView(title);
 
@@ -80,8 +83,18 @@ public class ConfigureTargetsActivity extends BaseActivity {
             input.setId(buildInputId(i));
             input.setMinLines(3);
             input.setMaxLines(6);
-            input.setBackgroundResource(android.R.drawable.edit_text);
+
+            GradientDrawable bg = new GradientDrawable();
+            bg.setShape(GradientDrawable.RECTANGLE);
+            bg.setCornerRadius(dpToPx(8, density));
+            int strokeColor = (surfaceColor & 0x00FFFFFF) | 0x66000000;
+            bg.setStroke(dpToPx(1, density), strokeColor);
+            bg.setColor(android.graphics.Color.TRANSPARENT);
+            input.setBackground(bg);
+
             input.setPadding(24, 20, 24, 20);
+            input.setTextColor(surfaceColor);
+            input.setHintTextColor((surfaceColor & 0x00FFFFFF) | 0x99000000);
             input.setHint(isChatSource(sourceId) ? CHAT_HINT : COURSE_HINT);
             container.addView(input);
         }
@@ -99,6 +112,10 @@ public class ConfigureTargetsActivity extends BaseActivity {
         TypedValue typedValue = new TypedValue();
         getTheme().resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true);
         return typedValue.data;
+    }
+
+    private static int dpToPx(int dp, float density) {
+        return (int) (dp * density + 0.5f);
     }
 
     private void saveTargets() {
