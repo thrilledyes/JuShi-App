@@ -80,31 +80,38 @@
         </LinearLayout>
     </FrameLayout>
 
-    <LinearLayout
-        android:id="@+id/timetableContainer"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="horizontal"
-        android:visibility="gone">
+        android:fillViewport="false"
+        android:scrollbars="vertical">
 
-        <com.jushi.demo.main.ui.timetable.PeriodLabelView
-            android:id="@+id/periodLabelColumn"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+        <LinearLayout
+            android:id="@+id/timetableContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
-        <HorizontalScrollView
-            android:id="@+id/horizontalScroll"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scrollbars="none">
-
-            <com.jushi.demo.main.ui.timetable.TimetableGridView
-                android:id="@+id/timetableGrid"
+            <com.jushi.demo.main.ui.timetable.PeriodLabelView
+                android:id="@+id/periodLabelColumn"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-        </HorizontalScrollView>
-    </LinearLayout>
+                android:layout_height="wrap_content" />
+
+            <HorizontalScrollView
+                android:id="@+id/horizontalScroll"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:scrollbars="none">
+
+                <com.jushi.demo.main.ui.timetable.TimetableGridView
+                    android:id="@+id/timetableGrid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </HorizontalScrollView>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
