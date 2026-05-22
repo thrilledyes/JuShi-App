@@ -103,8 +103,8 @@ E:/Macrosoft/
 ├── gradle.properties         # JVM 参数 & AndroidX 开关
 ├── local.properties          # 本地 SDK 路径
 ├── gradlew / gradlew.bat     # Gradle Wrapper
-├── README.md                 # 项目说明（空）
-├── 修改日志.txt               # 修改日志（空）
+├── README.md                 # 项目说明
+├── 修改日志.txt               # 修改日志
 ├── 用户界面设计.docx           # UI 设计文档（6.5MB）
 │
 ├── app/                      # ★ 主模块（唯一有代码的模块）
@@ -115,15 +115,28 @@ E:/Macrosoft/
 │       ├── java/com/jushi/demo/main/
 │       │   ├── BaseActivity.java
 │       │   ├── MainActivity.java
+│       │   ├── data/                  # 数据层（新增）
+│       │   │   ├── entity/Course.java          # Room 实体
+│       │   │   ├── CourseDao.java              # Room DAO
+│       │   │   └── CourseDatabase.java         # Room 数据库单例
 │       │   └── ui/
 │       │       ├── imports/          # 导入功能模块
+│       │       │   ├── DocxParser.java         # DOCX 课表解析器（新增）
+│       │       │   ├── ImportTimetableActivity.java
+│       │       │   ├── SelectSourceActivity.java
+│       │       │   ├── ConfigureTargetsActivity.java
+│       │       │   ├── SourceItem.java
+│       │       │   └── SourceAdapter.java
 │       │       ├── message/          # 消息 Tab
 │       │       ├── settings/         # 设置功能模块
 │       │       ├── timetable/        # 课表 Tab
+│       │       │   ├── TimetableFragment.java
+│       │       │   ├── TimetableGridView.java  # 自定义课表网格视图（新增）
+│       │       │   └── WeekUtils.java          # 周次/日期工具类（新增）
 │       │       └── todo/             # 待办 Tab
 │       └── res/
 │           ├── color/                # 颜色选择器
-│           ├── layout/               # 10 个布局文件
+│           ├── layout/               # 13 个布局文件
 │           ├── menu/                 # 底部导航 & 导入菜单
 │           ├── values/               # 字符串、颜色、日间主题
 │           └── values-night/         # 夜间主题 & 颜色
@@ -143,7 +156,7 @@ E:/Macrosoft/
 |------|------|------|
 | `app` | **活跃** | 所有代码和资源所在的主模块 |
 | `core` | 空壳 | 仅含空 README，预留给核心工具类 |
-| `data` | 空壳 | 仅含空 README，预留给数据层 |
+| `data` | 空壳 | 仅含空 README，预留给远端数据层 |
 
 ---
 
@@ -154,7 +167,7 @@ E:/Macrosoft/
 | 文件 | 作用 |
 |------|------|
 | `E:/Macrosoft/build.gradle` | 根构建脚本：声明 `com.android.application` 插件 v8.5.2，`apply false` |
-| `E:/Macrosoft/app/build.gradle` | App 模块构建脚本：SDK 36、Java 17、依赖 (AppCompat 1.7.0 + Material 1.12.0 + RecyclerView 1.3.2) |
+| `E:/Macrosoft/app/build.gradle` | App 模块构建脚本：SDK 36、Java 17、依赖（AppCompat 1.7.0 + Material 1.12.0 + RecyclerView 1.3.2 + Room 2.6.1） |
 | `E:/Macrosoft/settings.gradle` | 项目名 `JuShiUc01Demo`；阿里云 Maven 镜像（google、central、gradle-plugin）；只 include `:app` |
 | `E:/Macrosoft/gradle.properties` | `org.gradle.jvmargs=-Xmx2048m`，启用 AndroidX |
 
@@ -162,37 +175,53 @@ E:/Macrosoft/
 
 | 文件 | 行数 | 作用 |
 |------|------|------|
-| `app/src/main/java/com/jushi/demo/main/BaseActivity.java` | 67 | **全局 Activity 基类**：<br>• `attachBaseContext` 注入字体缩放（通过 `UiContextWrapper`）<br>• `onStart` 应用主题模式（深色/浅色/跟随系统）<br>• `applyGlobalTypography()` 递归遍历 View 树统一加粗<br>• 用 Handler 延迟二次执行，确保动态生成的 View 也能生效 |
-| `app/src/main/java/com/jushi/demo/main/MainActivity.java` | 106 | **应用主入口（LAUNCHER Activity）**：<br>• 底部导航栏 4 个 Tab（待办/课表/消息/设置）<br>• Fragment 切换逻辑<br>• 导入菜单（PopupMenu），跳转至消息源选择或课表导入 |
-| `app/src/main/java/com/jushi/demo/main/ui/settings/UiPreferences.java` | 48 | **设置持久化工具类**：<br>• SharedPreferences 读写<br>• 三个设置项：`font_scale`（float）、`font_bold`（boolean）、`theme_mode`（int）<br>• 主题模式映射到 `AppCompatDelegate.MODE_NIGHT_*` |
-| `app/src/main/java/com/jushi/demo/main/ui/settings/UiContextWrapper.java` | 18 | **Context 包装器**：<br>• 读取 `UiPreferences` 中的 `fontScale`<br>• 写入系统 `Configuration.fontScale`<br>• 实现全局字体缩放，无需每个页面单独处理 |
+| `app/.../BaseActivity.java` | 67 | **全局 Activity 基类**：`attachBaseContext` 注入字体缩放；`onStart` 应用主题模式；递归遍历 View 树统一加粗 |
+| `app/.../MainActivity.java` | 106 | **应用主入口（LAUNCHER Activity）**：底部导航栏 4 个 Tab；Fragment 切换逻辑；导入菜单 |
+| `app/.../settings/UiPreferences.java` | 48 | **设置持久化工具类**：SharedPreferences 读写；字体大小/加粗/主题模式 |
+| `app/.../settings/UiContextWrapper.java` | 18 | **Context 包装器**：注入字体缩放到系统 Configuration |
 
-### 功能页面
-
-#### 底部导航 Tab（Fragment）
-
-| 文件 | 状态 | 说明 |
-|------|------|------|
-| `ui/todo/TodoFragment.java` | 空壳占位 | 仅 inflate 布局，无业务逻辑 |
-| `ui/timetable/TimetableFragment.java` | 空壳占位 | 仅 inflate 布局，无业务逻辑 |
-| `ui/message/MessageFragment.java` | 空壳占位 | 仅 inflate 布局，无业务逻辑 |
-| `ui/settings/SettingsFragment.java` | 功能就绪 | 三个入口按钮跳转到子设置页 |
-
-#### 导入流程（核心落地业务）
+### 数据层（新增）
 
 | 文件 | 作用 |
 |------|------|
-| `ui/imports/SelectSourceActivity.java` | **步骤1 — 选择消息源**：<br>• 展示 6 个平台供多选：微信、企业微信、QQ、学习通、超算习堂、雨课堂<br>• 记忆上次选择（SharedPreferences）<br>• 点击"保存"跳转到步骤2 |
-| `ui/imports/SourceItem.java` | 消息源数据模型：id + name + selected |
-| `ui/imports/SourceAdapter.java` | RecyclerView 适配器：CheckBox + 整行点击切换 |
-| `ui/imports/ConfigureTargetsActivity.java` | **步骤2 — 配置监听目标**：<br>• 为每个选中的消息源动态生成输入框<br>• 聊天类（微信/企微/QQ）提示"群聊名称"<br>• 学习类（学习通等）提示"课程名称"<br>• 多行输入，每行一个目标<br>• 保存格式化数据到 SharedPreferences |
-| `ui/imports/ImportTimetableActivity.java` | 导入课表页面 — 空壳占位 |
+| `data/entity/Course.java` | Room 实体：课程名、教师、地点、星期、起始节次、结束节次、周次范围、颜色 |
+| `data/CourseDao.java` | Room DAO 接口：`getAllCourses()`、`getByDayOfWeek()`、`insertAll()`、`deleteAll()` |
+| `data/CourseDatabase.java` | Room 数据库单例：`jushi_courses.db`，版本 1，fallbackToDestructiveMigration |
+
+### 功能页面
+
+#### 课表展示（已实现）
+
+| 文件 | 作用 |
+|------|------|
+| `ui/timetable/TimetableFragment.java` | **课表 Tab**：从 Room 加载课程数据，按当前周过滤，展示周视图网格；周切换按钮；空态引导跳转导入 |
+| `ui/timetable/TimetableGridView.java` | **自定义 Canvas 课表网格**：7 列（周日~周六）× 11 节次；跨节次课程合并为彩色大格子；点击课程弹出详情对话框 |
+| `ui/timetable/WeekUtils.java` | 周次/日期工具：学期起始日管理、当前周切换、周范围过滤、时间段格式化 |
+
+#### 导入流程（课表导入已实现）
+
+| 文件 | 作用 |
+|------|------|
+| `ui/imports/SelectSourceActivity.java` | **步骤1 — 选择消息源**：6 个平台多选（微信/企微/QQ/学习通/超算习堂/雨课堂）；记忆上次选择 |
+| `ui/imports/SourceItem.java` | 消息源数据模型 |
+| `ui/imports/SourceAdapter.java` | RecyclerView 适配器 |
+| `ui/imports/ConfigureTargetsActivity.java` | **步骤2 — 配置监听目标**：为选中的消息源动态生成输入框；聊天类提示"群聊名称"，学习类提示"课程名称" |
+| `ui/imports/ImportTimetableActivity.java` | **课表导入**：SAF 文件选择器选取 .doc/.docx 文件 → 后台解析 → 预览确认 → Room 存储 |
+| `ui/imports/DocxParser.java` | **DOCX 解析器**：支持 Flat OPC XML 和 ZIP 两种格式；解析 Word 表格提取课程数据；处理单元格纵向合并（vMerge）识别跨节次课程 |
+
+#### 其他 Tab
+
+| 文件 | 状态 | 说明 |
+|------|------|------|
+| `ui/todo/TodoFragment.java` | 空壳占位 | 仅 inflate 布局 |
+| `ui/message/MessageFragment.java` | 空壳占位 | 仅 inflate 布局 |
+| `ui/settings/SettingsFragment.java` | 功能就绪 | 三个入口按钮跳转到子设置页 |
 
 #### 设置子页面
 
 | 文件 | 状态 | 功能 |
 |------|------|------|
-| `ui/settings/GeneralSettingsActivity.java` | **功能完备** | 字体大小（小/标准/大）、字体粗细（标准/加粗）、主题（系统/浅色/深色），通过 `recreate()` 即时生效 |
+| `ui/settings/GeneralSettingsActivity.java` | 功能完备 | 字体大小/粗细/主题，通过 `recreate()` 即时生效 |
 | `ui/settings/AuthoritySettingsActivity.java` | 静态占位 | 仅渲染布局 |
 | `ui/settings/ProfileSettingsActivity.java` | 静态占位 | 仅渲染布局 |
 
@@ -200,21 +229,21 @@ E:/Macrosoft/
 
 | 路径 | 说明 |
 |------|------|
-| `res/layout/activity_main.xml` | 主界面布局：顶部标题栏 + Fragment 容器 + 底部导航栏 |
+| `res/layout/activity_main.xml` | 主界面布局 |
 | `res/layout/activity_select_source.xml` | 消息源选择页 |
 | `res/layout/activity_configure_targets.xml` | 监听目标配置页 |
-| `res/layout/activity_import_timetable.xml` | 导入课表页 |
-| `res/layout/activity_settings_general.xml` | 通用设置页（RadioGroup × 3） |
+| `res/layout/activity_import_timetable.xml` | 导入课表页：文件选择按钮 + 状态提示 + 预览列表 + 确认/重选按钮 |
+| `res/layout/activity_settings_general.xml` | 通用设置页 |
 | `res/layout/activity_settings_authority.xml` | 权限设置页 |
 | `res/layout/activity_settings_profile.xml` | 个人资料页 |
-| `res/layout/fragment_timetable.xml` | 课表 Fragment 布局 |
+| `res/layout/fragment_timetable.xml` | 课表布局：周选择器 + HorizontalScrollView + 网格视图 + 空态 |
 | `res/layout/fragment_todo.xml` | 待办 Fragment 布局 |
 | `res/layout/fragment_message.xml` | 消息 Fragment 布局 |
-| `res/layout/fragment_settings.xml` | 设置 Fragment 布局（三个入口 item） |
+| `res/layout/fragment_settings.xml` | 设置 Fragment 布局 |
 | `res/layout/item_source.xml` | 消息源列表项布局 |
 | `res/menu/menu_bottom_nav.xml` | 底部导航菜单项定义 |
 | `res/menu/menu_import_actions.xml` | 导入下拉菜单项定义 |
-| `res/values/strings.xml` | 全部中文字符串（32 条） |
+| `res/values/strings.xml` | 全部中文字符串 |
 | `res/values/colors.xml` | 颜色定义 |
 | `res/values/themes.xml` | 日间主题 |
 | `res/values-night/themes.xml` | 夜间主题 |
@@ -230,7 +259,7 @@ E:/Macrosoft/
 | `GeneralSettingsActivity` | `false` | 通用设置 |
 | `AuthoritySettingsActivity` | `false` | 权限设置（占位） |
 | `ProfileSettingsActivity` | `false` | 个人资料（占位） |
-| `ImportTimetableActivity` | `false` | 导入课表（占位） |
+| `ImportTimetableActivity` | `false` | 导入课表（DOCX 解析 + Room 存储） |
 | `ConfigureTargetsActivity` | `false` | 配置监听目标 |
 | `SelectSourceActivity` | `false` | 选择消息源 |
 
@@ -240,11 +269,44 @@ E:/Macrosoft/
 
 1. **单 Activity + 多 Fragment**：`MainActivity` 承载 4 个 Tab 的 Fragment 切换
 2. **全局 UI 定制**：`BaseActivity` 通过 `attachBaseContext` 注入字体缩放，递归遍历 View 树统一加粗/主题
-3. **导入流程**是唯一有实质逻辑的功能：`选择消息源 → 配置监听目标 → 保存到 SharedPreferences`
-4. **3 个核心 Tab**（待办/课表/消息）目前仅渲染空布局，属于骨架占位
-5. **通用设置功能完备**：字体/主题修改即时生效，通过 `recreate()` 重建 Activity 刷新
-6. **数据持久化**全部使用 `SharedPreferences`，无数据库
-7. **依赖极简**：仅 AppCompat + Material + RecyclerView 三个第三方库
+3. **课表导入流程**：SAF 文件选择 → Flat OPC / ZIP DOCX 解析 → 表格识别 + vMerge 处理 → 预览确认 → Room 数据库持久化
+4. **课表展示**：自定义 Canvas 视图，7 列（周日~周六）× 11 节次网格，跨节次课程合并为彩色大格子，周切换，点击查看详情
+5. **消息源导入流程**：选择消息源 → 配置监听目标 → SharedPreferences 持久化
+6. **数据持久化**：课表数据使用 Room 数据库；消息源和设置使用 SharedPreferences
+7. **依赖**：AppCompat + Material + RecyclerView + Room 2.6.1
+
+---
+
+## DOCX 课程表格式说明
+
+### 支持的文件格式
+
+- **Flat OPC XML**（`.doc` 扩展名，单文件 XML）：教务系统导出的常见格式，`<?xml>` 开头
+- **标准 DOCX**（`.docx` 扩展名，ZIP 包）：Office 标准格式，`PK` 开头
+
+### 解析流程
+
+```
+用户选择 .doc/.docx 文件
+  → 检测格式（XML 头 → Flat OPC；PK 头 → ZIP）
+  → 提取 /word/document.xml
+  → 遍历 <w:tbl> 表格
+  → 识别表头行（含"星期日"~"星期六"）
+  → 映射列索引 → dayOfWeek（1~7）
+  → 每行解析节次号（"第N节" 或 "第N-M节"）
+  → 处理 <w:vMerge> 纵向合并（restart/continue）识别跨节次课程
+  → 提取单元格文本（周次/课程名/教师/地点）
+  → 合并同天相邻同课程
+  → 预览确认 → Room 存储
+```
+
+### 课表展示
+
+- **横轴**：周日~周六 + 日期（如 `5/20`）
+- **纵轴**：第1~11节 + 时间段（如 `8:00~8:45`）
+- **课程格**：彩色圆角卡片，显示课程名（加粗）、教师、地点
+- **跨节次**：纵向合并为一个大格子
+- **交互**：点击课程弹出详情对话框；左右箭头切换周次
 
 ---
 
@@ -257,7 +319,17 @@ E:/Macrosoft/
        ├─ BaseActivity.onStart() → AppCompatDelegate.setDefaultNightMode() → 主题切换
        └─ BaseActivity.applyGlobalTypography() → 递归 setTypeface → 加粗生效
 
-导入流程
+课表导入流程
+  └─ ImportTimetableActivity
+       └─ SAF 文件选择 → DocxParser.parse() → List<Course>
+            └─ CourseDao.insertAll() → Room DB (jushi_courses.db)
+
+课表展示
+  └─ TimetableFragment
+       └─ CourseDao.getAllCourses() → WeekUtils 过滤当前周
+            └─ TimetableGridView.setCourses() → Canvas 绘制网格
+
+消息源导入流程
   └─ SelectSourceActivity
        └─ 选择平台 → Intent 传递 → ConfigureTargetsActivity
             └─ 填写群聊/课程 → SharedPreferences "jushi_demo_prefs"
