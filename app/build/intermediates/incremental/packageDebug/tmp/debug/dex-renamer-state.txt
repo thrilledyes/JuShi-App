@@ -1,12 +1,13 @@
-#Fri May 22 14:23:31 CST 2026
-base.0=E\:\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
-base.1=E\:\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
-base.2=E\:\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\11\\classes.dex
-base.3=E\:\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\14\\classes.dex
-base.4=E\:\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\2\\classes.dex
-base.5=E\:\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\3\\classes.dex
-base.6=E\:\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\4\\classes.dex
-base.7=E\:\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\8\\classes.dex
+#Sun May 24 21:48:41 CST 2026
+base.0=C\:\\Users\\徐德鹏\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
+base.1=C\:\\Users\\徐德鹏\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
+base.2=C\:\\Users\\徐德鹏\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\11\\classes.dex
+base.3=C\:\\Users\\徐德鹏\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\14\\classes.dex
+base.4=C\:\\Users\\徐德鹏\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\2\\classes.dex
+base.5=C\:\\Users\\徐德鹏\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\3\\classes.dex
+base.6=C\:\\Users\\徐德鹏\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\4\\classes.dex
+base.7=C\:\\Users\\徐德鹏\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\7\\classes.dex
+base.8=C\:\\Users\\徐德鹏\\Macrosoft\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\8\\classes.dex
 path.0=classes.dex
 path.1=0/classes.dex
 path.2=11/classes.dex
@@ -14,7 +15,8 @@ path.3=14/classes.dex
 path.4=2/classes.dex
 path.5=3/classes.dex
 path.6=4/classes.dex
-path.7=8/classes.dex
+path.7=7/classes.dex
+path.8=8/classes.dex
 renamed.0=classes.dex
 renamed.1=classes2.dex
 renamed.2=classes3.dex
@@ -23,3 +25,4 @@ renamed.4=classes5.dex
 renamed.5=classes6.dex
 renamed.6=classes7.dex
 renamed.7=classes8.dex
+renamed.8=classes9.dex
