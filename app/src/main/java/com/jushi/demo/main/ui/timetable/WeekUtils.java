@@ -15,6 +15,8 @@ public class WeekUtils {
     private static final String PREFS_NAME = "jushi_timetable_prefs";
     private static final String KEY_SEMESTER_START = "semester_start_date";
     private static final String KEY_CURRENT_WEEK = "current_week";
+    private static final String KEY_ACADEMIC_YEAR = "academic_year";
+    private static final String KEY_SEMESTER = "semester";
 
     // Default: Feb 16, 2026 (Monday of spring semester start week)
     private static final long DEFAULT_SEMESTER_START = getDefaultSemesterStart();
@@ -44,6 +46,45 @@ public class WeekUtils {
     public static void setCurrentWeek(Context context, int week) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .edit().putInt(KEY_CURRENT_WEEK, week).apply();
+    }
+
+    public static int getAcademicYear(Context context) {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getInt(KEY_ACADEMIC_YEAR, 0);
+    }
+
+    public static void setAcademicYear(Context context, int year) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit().putInt(KEY_ACADEMIC_YEAR, year).apply();
+    }
+
+    public static int getSemester(Context context) {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getInt(KEY_SEMESTER, 0);
+    }
+
+    public static void setSemester(Context context, int semester) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit().putInt(KEY_SEMESTER, semester).apply();
+    }
+
+    public static long estimateSemesterStart(int academicYear, int semester) {
+        Calendar cal = Calendar.getInstance();
+        if (semester == 1) {
+            // First semester (fall): Monday of the week containing Sep 1
+            cal.set(academicYear, Calendar.SEPTEMBER, 1);
+        } else {
+            // Second semester (spring): Monday of the week containing Feb 16
+            cal.set(academicYear + 1, Calendar.FEBRUARY, 16);
+        }
+        int dow = cal.get(Calendar.DAY_OF_WEEK);
+        int diff = (dow - Calendar.MONDAY + 7) % 7;
+        cal.add(Calendar.DAY_OF_MONTH, -diff);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTimeInMillis();
     }
 
     public static boolean isActiveInWeek(Course course, int week) {
@@ -106,6 +147,12 @@ public class WeekUtils {
     };
 
     public static final int MAX_PERIODS = 11;
+
+    private static final float COMPACT_WIDTH_THRESHOLD_DP = 600;
+
+    public static boolean isCompactMode(float displayWidthPx, float density) {
+        return displayWidthPx / density < COMPACT_WIDTH_THRESHOLD_DP;
+    }
 
     public static String getPeriodTimeText(int period) {
         if (period < 1 || period > MAX_PERIODS) return "";

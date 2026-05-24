@@ -71,6 +71,9 @@ public class TimetableFragment extends Fragment {
     }
 
     private void loadAndDisplay() {
+        semesterStart = WeekUtils.getSemesterStart(requireContext());
+        currentWeek = WeekUtils.getCurrentWeek(requireContext());
+
         new Thread(() -> {
             CourseDatabase db = CourseDatabase.getInstance(requireContext());
             List<Course> courses = db.courseDao().getAllCourses();
