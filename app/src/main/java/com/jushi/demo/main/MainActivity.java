@@ -3,6 +3,7 @@ package com.jushi.demo.main;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -98,9 +99,8 @@ public class MainActivity extends BaseActivity {
     }
 
     private void applyTitleStyle() {
-        float scale = UiPreferences.getFontScale(this);
         boolean bold = UiPreferences.isFontBold(this);
-        tvPageTitle.setTextSize(18f * scale);
+        tvPageTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f);
         tvPageTitle.setTypeface(tvPageTitle.getTypeface(), bold ? Typeface.BOLD : Typeface.NORMAL);
     }
 }

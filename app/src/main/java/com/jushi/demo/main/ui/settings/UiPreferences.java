@@ -10,6 +10,9 @@ public final class UiPreferences {
     public static final String KEY_FONT_SCALE = "font_scale";
     public static final String KEY_FONT_BOLD = "font_bold";
     public static final String KEY_THEME_MODE = "theme_mode";
+    public static final float FONT_SCALE_SMALL = 0.85f;
+    public static final float FONT_SCALE_NORMAL = 1.0f;
+    public static final float FONT_SCALE_LARGE = 1.3f;
 
     public static final int THEME_SYSTEM = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
     public static final int THEME_LIGHT = AppCompatDelegate.MODE_NIGHT_NO;
@@ -23,8 +26,8 @@ public final class UiPreferences {
     }
 
     public static float getFontScale(Context context) {
-        return prefs(context).getFloat(KEY_FONT_SCALE, 1.0f);
-    }
+           return prefs(context).getFloat(KEY_FONT_SCALE, FONT_SCALE_NORMAL);
+       }
 
     public static boolean isFontBold(Context context) {
         return prefs(context).getBoolean(KEY_FONT_BOLD, false);

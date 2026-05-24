@@ -12,6 +12,9 @@ public final class UiContextWrapper extends ContextWrapper {
     public static Context wrap(Context base) {
         float fontScale = UiPreferences.getFontScale(base);
         Configuration configuration = new Configuration(base.getResources().getConfiguration());
+        if (Math.abs(configuration.fontScale - fontScale) < 0.01f) {
+            return base;
+        }
         configuration.fontScale = fontScale;
         return base.createConfigurationContext(configuration);
     }

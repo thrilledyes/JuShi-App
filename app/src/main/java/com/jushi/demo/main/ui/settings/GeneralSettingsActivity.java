@@ -30,9 +30,9 @@ public class GeneralSettingsActivity extends BaseActivity {
 
     private void bindCurrentValues() {
         float scale = UiPreferences.getFontScale(this);
-        if (scale <= 0.9f) {
+        if (Math.abs(scale - UiPreferences.FONT_SCALE_SMALL) < 0.01f) {
             ((RadioButton) findViewById(R.id.rbFontSmall)).setChecked(true);
-        } else if (scale >= 1.1f) {
+        } else if (Math.abs(scale - UiPreferences.FONT_SCALE_LARGE) < 0.01f) {
             ((RadioButton) findViewById(R.id.rbFontLarge)).setChecked(true);
         } else {
             ((RadioButton) findViewById(R.id.rbFontNormal)).setChecked(true);
@@ -53,11 +53,11 @@ public class GeneralSettingsActivity extends BaseActivity {
 
     private void bindListeners() {
         rgFontSize.setOnCheckedChangeListener((group, checkedId) -> {
-            float scale = 1.0f;
+            float scale = UiPreferences.FONT_SCALE_NORMAL;
             if (checkedId == R.id.rbFontSmall) {
-                scale = 0.9f;
+                scale = UiPreferences.FONT_SCALE_SMALL;
             } else if (checkedId == R.id.rbFontLarge) {
-                scale = 1.1f;
+                scale = UiPreferences.FONT_SCALE_LARGE;
             }
             UiPreferences.saveFontScale(this, scale);
             Toast.makeText(this, R.string.settings_saved, Toast.LENGTH_SHORT).show();

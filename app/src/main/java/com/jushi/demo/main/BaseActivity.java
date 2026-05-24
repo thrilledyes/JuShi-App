@@ -26,6 +26,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         AppCompatDelegate.setDefaultNightMode(UiPreferences.getThemeMode(this));
+        if (isFontScaleOutOfSync()) {
+            recreate();
+            return;
+        }
         applyGlobalTypography();
     }
 
@@ -50,6 +54,12 @@ public abstract class BaseActivity extends AppCompatActivity {
             boolean delayedBold = UiPreferences.isFontBold(this);
             applyTypefaceRecursively(delayedRoot, delayedBold ? Typeface.BOLD : Typeface.NORMAL);
         });
+    }
+
+    private boolean isFontScaleOutOfSync() {
+        float expectedScale = UiPreferences.getFontScale(this);
+        float appliedScale = getResources().getConfiguration().fontScale;
+        return Math.abs(appliedScale - expectedScale) > 0.01f;
     }
 
     private void applyTypefaceRecursively(View view, int style) {

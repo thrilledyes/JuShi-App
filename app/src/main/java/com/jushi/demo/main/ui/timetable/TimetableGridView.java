@@ -38,6 +38,7 @@ public class TimetableGridView extends View {
     private final Paint surfacePaint;
 
     private final float density;
+    private final float scaledDensity;
     private final int displayWidthPx;
     private float labelWidth, headerHeight, cellWidth, rowHeight;
     private int totalWidth, totalHeight;
@@ -60,6 +61,7 @@ public class TimetableGridView extends View {
     public TimetableGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
         density = context.getResources().getDisplayMetrics().density;
+        scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
         displayWidthPx = context.getResources().getDisplayMetrics().widthPixels;
 
         surfacePaint = new Paint();
@@ -76,24 +78,24 @@ public class TimetableGridView extends View {
 
         headerPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         headerPaint.setColor(Color.WHITE);
-        headerPaint.setTextSize(dpToPx(11));
+        headerPaint.setTextSize(spToPx(11));
         headerPaint.setTextAlign(Paint.Align.CENTER);
         headerPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
         labelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         labelPaint.setColor(0xFF666666);
-        labelPaint.setTextSize(dpToPx(10));
+        labelPaint.setTextSize(spToPx(10));
         labelPaint.setTextAlign(Paint.Align.CENTER);
 
         courseNamePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         courseNamePaint.setColor(Color.WHITE);
-        courseNamePaint.setTextSize(dpToPx(12));
+        courseNamePaint.setTextSize(spToPx(12));
         courseNamePaint.setTypeface(Typeface.DEFAULT_BOLD);
         fmCourseName = courseNamePaint.getFontMetrics();
 
         courseDetailPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         courseDetailPaint.setColor(0xEEFFFFFF);
-        courseDetailPaint.setTextSize(dpToPx(9));
+        courseDetailPaint.setTextSize(spToPx(9));
         fmCourseDetail = courseDetailPaint.getFontMetrics();
 
         gridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -381,5 +383,9 @@ public class TimetableGridView extends View {
 
     private float dpToPx(float dp) {
         return dp * density;
+    }
+
+    private float spToPx(float sp) {
+        return sp * scaledDensity;
     }
 }

@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="?attr/colorPrimary"
-        android:gravity="center_vertical"
+        android:gravity=""
         android:orientation="horizontal"
         android:paddingHorizontal="12dp">
 
@@ -17,6 +17,7 @@
             android:id="@+id/btnToolbar"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_gravity="bottom"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/toolbar"
             android:padding="8dp"
@@ -26,7 +27,7 @@
         <TextView
             android:id="@+id/tvPageTitle"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/nav_todo"
@@ -38,6 +39,7 @@
             android:id="@+id/btnImport"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_gravity="bottom"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/import_action"
             android:padding="8dp"

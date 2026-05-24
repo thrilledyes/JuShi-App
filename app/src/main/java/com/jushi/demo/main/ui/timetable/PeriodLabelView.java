@@ -23,6 +23,7 @@ public class PeriodLabelView extends View {
     private final Paint surfacePaint;
 
     private final float density;
+    private final float scaledDensity;
     private float labelWidth, headerHeight, rowHeight;
     private int totalWidth, totalHeight;
 
@@ -33,6 +34,7 @@ public class PeriodLabelView extends View {
     public PeriodLabelView(Context context, AttributeSet attrs) {
         super(context, attrs);
         density = context.getResources().getDisplayMetrics().density;
+        scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
 
         surfacePaint = new Paint();
         surfacePaint.setColor(Color.WHITE);
@@ -48,7 +50,7 @@ public class PeriodLabelView extends View {
 
         labelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         labelPaint.setColor(0xFF666666);
-        labelPaint.setTextSize(dpToPx(10));
+        labelPaint.setTextSize(spToPx(10));
         labelPaint.setTextAlign(Paint.Align.CENTER);
 
         gridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -134,5 +136,9 @@ public class PeriodLabelView extends View {
 
     private float dpToPx(float dp) {
         return dp * density;
+    }
+
+    private float spToPx(float sp) {
+        return sp * scaledDensity;
     }
 }
