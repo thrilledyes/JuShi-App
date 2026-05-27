@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/action_select_source"
-        android:title="@string/import_menu_select_source" />
-    <item
-        android:id="@+id/action_import_timetable"
-        android:title="@string/import_menu_timetable" />
-</menu>

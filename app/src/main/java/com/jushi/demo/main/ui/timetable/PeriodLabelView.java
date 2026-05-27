@@ -10,10 +10,11 @@ import android.view.View;
 
 public class PeriodLabelView extends View {
 
-    private static final float LABEL_WIDTH_DP = 70;
-    private static final float HEADER_HEIGHT_DP = 48;
-    private static final float ROW_HEIGHT_DP = 82;
-    private static final float ROW_MIN_HEIGHT_DP = 48;
+    private final boolean compact;
+    private final float labelWidthDp;
+    private final float headerHeightDp;
+    private final float rowHeightDp;
+    private final float rowMinHeightDp;
 
     private final TextPaint labelPaint;
     private final Paint gridPaint;
@@ -23,7 +24,7 @@ public class PeriodLabelView extends View {
     private final Paint surfacePaint;
 
     private final float density;
-    private final float scaledDensity;
+    private final int displayWidthPx;
     private float labelWidth, headerHeight, rowHeight;
     private int totalWidth, totalHeight;
 
@@ -34,7 +35,13 @@ public class PeriodLabelView extends View {
     public PeriodLabelView(Context context, AttributeSet attrs) {
         super(context, attrs);
         density = context.getResources().getDisplayMetrics().density;
-        scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
+        displayWidthPx = context.getResources().getDisplayMetrics().widthPixels;
+        compact = WeekUtils.isCompactMode(displayWidthPx, density);
+
+        labelWidthDp = compact ? 48 : 70;
+        headerHeightDp = compact ? 40 : 48;
+        rowHeightDp = compact ? 50 : 82;
+        rowMinHeightDp = compact ? 40 : 48;
 
         surfacePaint = new Paint();
         surfacePaint.setColor(Color.WHITE);
@@ -50,7 +57,7 @@ public class PeriodLabelView extends View {
 
         labelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         labelPaint.setColor(0xFF666666);
-        labelPaint.setTextSize(spToPx(10));
+        labelPaint.setTextSize(dpToPx(compact ? 9 : 10));
         labelPaint.setTextAlign(Paint.Align.CENTER);
 
         gridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -61,15 +68,15 @@ public class PeriodLabelView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        labelWidth = dpToPx(LABEL_WIDTH_DP);
-        headerHeight = dpToPx(HEADER_HEIGHT_DP);
+        labelWidth = dpToPx(labelWidthDp);
+        headerHeight = dpToPx(headerHeightDp);
 
         totalWidth = (int) labelWidth;
 
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        float minRow = dpToPx(ROW_MIN_HEIGHT_DP);
-        float defaultRow = dpToPx(ROW_HEIGHT_DP);
+        float minRow = dpToPx(rowMinHeightDp);
+        float defaultRow = dpToPx(rowHeightDp);
 
         if (heightMode == MeasureSpec.EXACTLY || heightMode == MeasureSpec.AT_MOST) {
             float calcRow = (heightSize - headerHeight) / (float) WeekUtils.MAX_PERIODS;
@@ -136,9 +143,5 @@ public class PeriodLabelView extends View {
 
     private float dpToPx(float dp) {
         return dp * density;
-    }
-
-    private float spToPx(float sp) {
-        return sp * scaledDensity;
     }
 }
