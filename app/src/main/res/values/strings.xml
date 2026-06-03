@@ -43,4 +43,16 @@
     <string name="settings_saved">设置已保存</string>
     <string name="settings_profile_placeholder">个人资料页面（静态占位）</string>
     <string name="settings_authority_placeholder">权限设置页面（静态占位）</string>
+
+    <string name="todo_title">待办任务</string>
+    <string name="ddl_remaining">本周还剩%1$d个DDL</string>
+    <string name="overdue">🔴逾期未交(%1$d)</string>
+    <string name="urgent">🟡今天截止(%1$d)</string>
+    <string name="pending">🟢待补充(%1$d)</string>
+    <string name="task_placeholder">task_name</string>
+    <string name="task_desc_placeholder">text</string>
+    <string name="task_time_placeholder">%1$d:%2$d</string>
+    <string name="task_source_placeholder">%1$s</string>
+    <string name="task_pending">待补充</string>
+
 </resources>
