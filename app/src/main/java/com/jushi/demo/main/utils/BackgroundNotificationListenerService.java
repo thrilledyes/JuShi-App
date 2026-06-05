@@ -4,6 +4,10 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
+import com.jushi.demo.main.database.db.DBManager;
+import com.jushi.demo.main.database.model.RawMessage;
+import com.jushi.demo.main.database.model.SourceType;
+
 import java.util.List;
 
 public class BackgroundNotificationListenerService extends NotificationListenerService {
@@ -33,7 +37,7 @@ public class BackgroundNotificationListenerService extends NotificationListenerS
             return;
         }
 
-        FilteredNotificationJsonStore.append(getApplicationContext(), message);
+        new DBManager(getApplicationContext()).insertRawMessage(toRawMessage(message));
         Log.i(TAG, "Captured and stored filtered notification");
     }
 
@@ -65,5 +69,25 @@ public class BackgroundNotificationListenerService extends NotificationListenerS
             return "";
         }
         return sessionId.substring(index + 1);
+    }
+
+    private RawMessage toRawMessage(MessageModel message) {
+        RawMessage rawMessage = new RawMessage();
+        rawMessage.sessionId = message.getSessionId();
+        rawMessage.source = parseSourceType(message.getSource());
+        rawMessage.sender = message.getSender();
+        rawMessage.title = message.getTitle();
+        rawMessage.content = message.getContent();
+        rawMessage.rawPayload = message.getRawPayload();
+        rawMessage.timestamp = message.getTimestamp();
+        return rawMessage;
+    }
+
+    private SourceType parseSourceType(String source) {
+        try {
+            return SourceType.valueOf(source);
+        } catch (Exception ignored) {
+            return SourceType.ANDROID;
+        }
     }
 }

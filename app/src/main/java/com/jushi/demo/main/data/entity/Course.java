@@ -1,34 +1,21 @@
 package com.jushi.demo.main.data.entity;
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
-@Entity(tableName = "courses")
 public class Course {
 
-    @PrimaryKey(autoGenerate = true)
     private int id;
 
-    @ColumnInfo(name = "course_name")
     private String courseName;
 
-    @ColumnInfo(name = "teacher")
     private String teacher;
 
-    @ColumnInfo(name = "location")
     private String location;
 
-    @ColumnInfo(name = "day_of_week")
     private int dayOfWeek; // 1=Sunday ... 7=Saturday
 
-    @ColumnInfo(name = "start_period")
     private int startPeriod;
 
-    @ColumnInfo(name = "end_period")
     private int endPeriod;
 
-    @ColumnInfo(name = "week_range")
     private String weekRange; // e.g., "1-17" or "4-4"
 
     private int color;

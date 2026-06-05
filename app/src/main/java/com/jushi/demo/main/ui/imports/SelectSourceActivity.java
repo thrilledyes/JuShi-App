@@ -19,7 +19,6 @@ import java.util.List;
 public class SelectSourceActivity extends BaseActivity {
     public static final String PREFS_NAME = "jushi_demo_prefs";
     public static final String KEY_SELECTED_SOURCE_PACKAGES = "selected_source_packages";
-    public static final String KEY_NOTIFICATION_RULES_JSON = "notification_rules_json";
     public static final String EXTRA_SELECTED_SOURCE_PACKAGES = "extra_selected_source_packages";
     public static final String EXTRA_SELECTED_SOURCE_NAMES = "extra_selected_source_names";
 

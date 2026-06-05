@@ -2,18 +2,13 @@ package com.jushi.demo.main.utils;
 
 import android.content.Context;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.jushi.demo.main.database.db.DBManager;
+import com.jushi.demo.main.database.model.NotificationRule;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class NotificationRuleStore {
-    private static final String RULE_FILE_NAME = "notification_rules.json";
-
     private NotificationRuleStore() {
     }
 
@@ -23,41 +18,13 @@ public final class NotificationRuleStore {
             return rules;
         }
 
-        File ruleFile = new File(context.getFilesDir(), RULE_FILE_NAME);
-        if (!ruleFile.exists()) {
-            return rules;
+        List<NotificationRule> dbRules = new DBManager(context).getEnabledNotificationRules();
+        for (NotificationRule dbRule : dbRules) {
+            Rule rule = new Rule(dbRule.packageName, dbRule.groupName);
+            if (!rule.packageName.isEmpty() || !rule.groupName.isEmpty()) {
+                rules.add(rule);
+            }
         }
-
-        try (FileInputStream fis = new FileInputStream(ruleFile)) {
-            byte[] bytes = new byte[(int) ruleFile.length()];
-            int read = fis.read(bytes);
-            if (read <= 0) {
-                return rules;
-            }
-
-            String raw = new String(bytes, 0, read, StandardCharsets.UTF_8);
-            JSONObject root = new JSONObject(raw);
-            JSONArray sources = root.optJSONArray("sources");
-            if (sources == null) {
-                return rules;
-            }
-
-            for (int i = 0; i < sources.length(); i++) {
-                JSONObject item = sources.optJSONObject(i);
-                if (item == null) {
-                    continue;
-                }
-                Rule rule = new Rule(
-                        item.optString("packageName", ""),
-                        item.optString("groupName", "")
-                );
-                if (!rule.packageName.isEmpty() || !rule.groupName.isEmpty()) {
-                    rules.add(rule);
-                }
-            }
-        } catch (Exception ignored) {
-        }
-
         return rules;
     }
 

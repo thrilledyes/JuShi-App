@@ -1,0 +1,22 @@
+conversation:
+id, session_id, source_type, name, last_active
+(int, text, text, text, int)
+
+raw_message:
+id, session_id, source_type, sender, title, content, raw_payload, timestamp, message_hash
+(int, text, text, text, text, text, text, int, text)
+
+normalized_record: 
+id, course_name, task_title, description, deadline, confidence, created_at, updated_at
+(int, text, text, text, int/text, real, int, int)
+
+raw_normalized_map:
+raw_id, normalized_id
+(int, int)
+
+
+auth_session: // payload includes pwd, etc...
+id, platform, account, cookie, token, login_payload, expire_time, updated_at 
+(int, text, text, text, text, text, int, int)
+
+attachment // Optional

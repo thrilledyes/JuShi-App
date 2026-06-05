@@ -11,17 +11,14 @@ import android.widget.Toast;
 
 import com.jushi.demo.main.BaseActivity;
 import com.jushi.demo.main.R;
+import com.jushi.demo.main.database.db.DBManager;
+import com.jushi.demo.main.database.model.NotificationRule;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConfigureTargetsActivity extends BaseActivity {
-    private static final String CHAT_HINT = "每行填写一个群聊/课程名称";
+    private static final String TARGET_HINT = "每行填写一个群聊/课程名称";
 
     private LinearLayout container;
     private TextView tvPreview;
@@ -39,7 +36,7 @@ public class ConfigureTargetsActivity extends BaseActivity {
 
         parseIntentData();
         buildInputBlocks();
-        btnSave.setOnClickListener(v -> saveTargetsAsRulesJson());
+        btnSave.setOnClickListener(v -> saveTargetsToDatabase());
     }
 
     private void parseIntentData() {
@@ -54,21 +51,14 @@ public class ConfigureTargetsActivity extends BaseActivity {
             return new String[0];
         }
         String[] arr = csv.split(",");
-        int validCount = 0;
-        for (String item : arr) {
-            if (!item.trim().isEmpty()) {
-                validCount++;
-            }
-        }
-        String[] out = new String[validCount];
-        int index = 0;
+        List<String> values = new ArrayList<>();
         for (String item : arr) {
             String value = item.trim();
             if (!value.isEmpty()) {
-                out[index++] = value;
+                values.add(value);
             }
         }
-        return out;
+        return values.toArray(new String[0]);
     }
 
     private void buildInputBlocks() {
@@ -77,10 +67,8 @@ public class ConfigureTargetsActivity extends BaseActivity {
         float density = getResources().getDisplayMetrics().density;
 
         for (int i = 0; i < sourcePackages.length && i < sourceNames.length; i++) {
-            String sourceName = sourceNames[i];
-
             TextView title = new TextView(this);
-            title.setText(sourceName);
+            title.setText(sourceNames[i]);
             title.setTextSize(17f);
             title.setTextColor(surfaceColor);
             title.setPadding(0, 20, 0, 8);
@@ -102,7 +90,7 @@ public class ConfigureTargetsActivity extends BaseActivity {
             input.setPadding(24, 20, 24, 20);
             input.setTextColor(surfaceColor);
             input.setHintTextColor((surfaceColor & 0x00FFFFFF) | 0x99000000);
-            input.setHint(CHAT_HINT);
+            input.setHint(TARGET_HINT);
             container.addView(input);
         }
     }
@@ -121,9 +109,10 @@ public class ConfigureTargetsActivity extends BaseActivity {
         return (int) (dp * density + 0.5f);
     }
 
-    private void saveTargetsAsRulesJson() {
-        JSONArray sources = new JSONArray();
+    private void saveTargetsToDatabase() {
+        List<NotificationRule> rules = new ArrayList<>();
         StringBuilder preview = new StringBuilder();
+        long now = System.currentTimeMillis();
 
         for (int i = 0; i < sourcePackages.length && i < sourceNames.length; i++) {
             String packageName = sourcePackages[i];
@@ -135,15 +124,7 @@ public class ConfigureTargetsActivity extends BaseActivity {
 
             String raw = input.getText().toString().trim();
             if (raw.isEmpty()) {
-                try {
-                    JSONObject item = new JSONObject();
-                    item.put("packageName", packageName);
-                    item.put("groupName", "");
-                    sources.put(item);
-                } catch (JSONException e) {
-                    Toast.makeText(this, "生成规则失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                rules.add(buildRule(packageName, sourceName, "", now));
                 preview.append(sourceName).append(" -> ").append(packageName).append(" (全部)\n");
                 continue;
             }
@@ -154,52 +135,30 @@ public class ConfigureTargetsActivity extends BaseActivity {
                 if (groupName.isEmpty()) {
                     continue;
                 }
-                try {
-                    JSONObject item = new JSONObject();
-                    item.put("packageName", packageName);
-                    item.put("groupName", groupName);
-                    sources.put(item);
-                } catch (JSONException e) {
-                    Toast.makeText(this, "生成规则失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                rules.add(buildRule(packageName, sourceName, groupName, now));
                 preview.append(sourceName).append(" -> ").append(packageName)
                         .append(" / ").append(groupName).append('\n');
             }
         }
 
-        if (sources.length() == 0) {
+        if (rules.isEmpty()) {
             Toast.makeText(this, "请至少填写一个监听对象", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        final String json;
-        try {
-            JSONObject root = new JSONObject();
-            root.put("sources", sources);
-            json = root.toString();
-        } catch (JSONException e) {
-            Toast.makeText(this, "生成规则失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        getSharedPreferences(SelectSourceActivity.PREFS_NAME, MODE_PRIVATE)
-                .edit()
-                .putString(SelectSourceActivity.KEY_NOTIFICATION_RULES_JSON, json)
-                .apply();
-
-        try {
-            File file = new File(getFilesDir(), "notification_rules.json");
-            try (FileOutputStream fos = new FileOutputStream(file, false)) {
-                fos.write(json.getBytes(StandardCharsets.UTF_8));
-                fos.flush();
-            }
-        } catch (Exception e) {
-            Toast.makeText(this, "保存规则文件失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            return;
-        }
-
+        new DBManager(this).replaceNotificationRules(rules);
         tvPreview.setText(preview.toString().trim());
         Toast.makeText(this, "监听规则已保存", Toast.LENGTH_SHORT).show();
+    }
+
+    private NotificationRule buildRule(String packageName, String sourceName, String groupName, long now) {
+        NotificationRule rule = new NotificationRule();
+        rule.packageName = packageName;
+        rule.sourceName = sourceName;
+        rule.groupName = groupName;
+        rule.enabled = true;
+        rule.createdAt = now;
+        rule.updatedAt = now;
+        return rule;
     }
 }

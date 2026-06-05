@@ -12,8 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.jushi.demo.main.R;
-import com.jushi.demo.main.data.CourseDatabase;
 import com.jushi.demo.main.data.entity.Course;
+import com.jushi.demo.main.database.db.DBManager;
 import com.jushi.demo.main.ui.imports.ImportTimetableActivity;
 
 import java.util.List;
@@ -71,9 +71,12 @@ public class TimetableFragment extends Fragment {
     }
 
     private void loadAndDisplay() {
+        semesterStart = WeekUtils.getSemesterStart(requireContext());
+        currentWeek = WeekUtils.getCurrentWeek(requireContext());
+
         new Thread(() -> {
-            CourseDatabase db = CourseDatabase.getInstance(requireContext());
-            List<Course> courses = db.courseDao().getAllCourses();
+            DBManager db = new DBManager(requireContext());
+            List<Course> courses = db.getAllCourses();
 
             requireActivity().runOnUiThread(() -> {
                 if (courses.isEmpty()) {
