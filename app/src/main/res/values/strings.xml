@@ -9,9 +9,12 @@
     <string name="nav_settings">设置</string>
     <string name="import_menu_select_source">选择消息源</string>
     <string name="import_menu_timetable">导入课表</string>
+    <string name="import_menu_easyhpc">同步超算作业</string>
+    <string name="todo_menu_add">新增待办</string>
     <string name="import_timetable_title">导入课表</string>
     <string name="import_timetable_hint">选择从教务系统导出的课程表文件（.doc或.docx）</string>
     <string name="import_timetable_btn_pick">选择课表文件</string>
+    <string name="import_timetable_btn_online">联网导入课表</string>
     <string name="import_timetable_parsing">正在解析课表文件…</string>
     <string name="import_timetable_preview_count">已识别 %1$d 门课程 (%2$s)</string>
     <string name="import_timetable_btn_confirm">确认导入</string>

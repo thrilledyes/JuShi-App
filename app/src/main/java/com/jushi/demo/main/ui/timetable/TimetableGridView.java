@@ -34,6 +34,9 @@ public class TimetableGridView extends View {
     private final TextPaint courseDetailPaint;
     private final Paint gridPaint;
     private final Paint headerBgPaint;
+    private final Paint todayHeaderBgPaint;
+    private final Paint todayColumnBgPaint;
+    private final Paint todayCourseStrokePaint;
     private final Paint labelBgPaint;
     private final Paint labelBgAltPaint;
     private final Paint surfacePaint;
@@ -47,6 +50,7 @@ public class TimetableGridView extends View {
     private int currentWeek = 1;
     private long semesterStart;
     private String[] dateLabels = new String[7];
+    private int todayColumn = -1;
     private final Course[][] grid;
     private boolean showLabelColumn = true;
 
@@ -75,6 +79,17 @@ public class TimetableGridView extends View {
 
         headerBgPaint = new Paint();
         headerBgPaint.setColor(0xFF1565C0);
+
+        todayHeaderBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        todayHeaderBgPaint.setColor(0xFF0D47A1);
+
+        todayColumnBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        todayColumnBgPaint.setColor(0xFFFFF8E1);
+
+        todayCourseStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        todayCourseStrokePaint.setColor(0xFFFFD54F);
+        todayCourseStrokePaint.setStrokeWidth(dpToPx(2));
+        todayCourseStrokePaint.setStyle(Paint.Style.STROKE);
 
         labelBgPaint = new Paint();
         labelBgPaint.setColor(0xFFF5F5F5);
@@ -122,6 +137,7 @@ public class TimetableGridView extends View {
         this.currentWeek = week;
         this.semesterStart = semStart;
         this.dateLabels = WeekUtils.getDateLabels(week, semStart);
+        this.todayColumn = WeekUtils.getTodayColumnForWeek(week, semStart);
         buildGrid();
         invalidate();
     }
@@ -193,6 +209,11 @@ public class TimetableGridView extends View {
 
         canvas.drawRect(0, 0, totalWidth, totalHeight, surfacePaint);
 
+        if (todayColumn >= 0) {
+            float left = labelWidth + todayColumn * cellWidth;
+            canvas.drawRect(left, headerHeight, left + cellWidth, totalHeight, todayColumnBgPaint);
+        }
+
         // Corner cell
         if (showLabelColumn) {
             canvas.drawRect(0, 0, labelWidth, headerHeight, headerBgPaint);
@@ -202,7 +223,13 @@ public class TimetableGridView extends View {
         String[] dayNames = {"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
         for (int d = 0; d < 7; d++) {
             float left = labelWidth + d * cellWidth;
-            canvas.drawRect(left, 0, left + cellWidth, headerHeight, headerBgPaint);
+            canvas.drawRect(
+                    left,
+                    0,
+                    left + cellWidth,
+                    headerHeight,
+                    d == todayColumn ? todayHeaderBgPaint : headerBgPaint
+            );
 
             String label = dayNames[d];
             if (dateLabels[d] != null) {
@@ -272,6 +299,9 @@ public class TimetableGridView extends View {
         Paint cellPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         cellPaint.setColor(bgColor);
         canvas.drawRoundRect(rect, cellRadius, cellRadius, cellPaint);
+        if (dayIdx == todayColumn) {
+            canvas.drawRoundRect(rect, cellRadius, cellRadius, todayCourseStrokePaint);
+        }
 
         float textLeft = left + textPad;
         float textWidth = right - textLeft - textPad;

@@ -11,6 +11,8 @@ public final class DBSchema {
     public static final String TABLE_AUTH_SESSION = "auth_session";
     public static final String TABLE_COURSES = "courses";
     public static final String TABLE_NOTIFICATION_RULE = "notification_rule";
+    public static final String TABLE_TODO_MESSAGE = "todo_message";
+    public static final String TABLE_COURSE_REMINDER_RULE = "course_reminder_rule";
 
     public static final String CREATE_CONVERSATION =
             "CREATE TABLE IF NOT EXISTS " + TABLE_CONVERSATION + "("
@@ -84,8 +86,38 @@ public final class DBSchema {
                     + "package_name TEXT,"
                     + "source_name TEXT,"
                     + "group_name TEXT,"
+                    + "course_id INTEGER DEFAULT 0,"
+                    + "course_name TEXT,"
                     + "enabled INTEGER DEFAULT 1,"
                     + "created_at INTEGER,"
+                    + "updated_at INTEGER"
+                    + ")";
+
+    public static final String CREATE_TODO_MESSAGE =
+            "CREATE TABLE IF NOT EXISTS " + TABLE_TODO_MESSAGE + "("
+                    + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "conversation_id TEXT,"
+                    + "conversation_title TEXT,"
+                    + "message_type TEXT,"
+                    + "sender_type TEXT,"
+                    + "title TEXT,"
+                    + "content TEXT,"
+                    + "deadline TEXT,"
+                    + "source_raw_id INTEGER,"
+                    + "created_at INTEGER,"
+                    + "read_at INTEGER DEFAULT 0,"
+                    + "pinned_at INTEGER DEFAULT 0,"
+                    + "completed_at INTEGER DEFAULT 0,"
+                    + "reminder_at INTEGER DEFAULT 0"
+                    + ")";
+
+    public static final String CREATE_COURSE_REMINDER_RULE =
+            "CREATE TABLE IF NOT EXISTS " + TABLE_COURSE_REMINDER_RULE + "("
+                    + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "course_id INTEGER UNIQUE,"
+                    + "enabled INTEGER DEFAULT 1,"
+                    + "remind_day_before INTEGER DEFAULT 1,"
+                    + "remind_before_minutes INTEGER DEFAULT 20,"
                     + "updated_at INTEGER"
                     + ")";
 }

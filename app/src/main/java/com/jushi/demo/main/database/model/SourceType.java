@@ -4,5 +4,6 @@ public enum SourceType {
     QQ,
     WX,
     WEB,
+    EASYHPC,
     ANDROID
 }

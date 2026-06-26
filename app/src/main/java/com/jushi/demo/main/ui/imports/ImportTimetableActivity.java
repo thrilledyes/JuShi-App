@@ -38,6 +38,7 @@ public class ImportTimetableActivity extends BaseActivity {
 
     private TextView tvStatus;
     private Button btnPickFile;
+    private Button btnOnlineImport;
     private View previewContainer;
     private RecyclerView rvPreview;
     private View actionButtons;
@@ -57,6 +58,7 @@ public class ImportTimetableActivity extends BaseActivity {
 
         tvStatus = findViewById(R.id.tvStatus);
         btnPickFile = findViewById(R.id.btnPickFile);
+        btnOnlineImport = findViewById(R.id.btnOnlineImport);
         previewContainer = findViewById(R.id.previewContainer);
         rvPreview = findViewById(R.id.rvPreview);
         actionButtons = findViewById(R.id.actionButtons);
@@ -66,8 +68,22 @@ public class ImportTimetableActivity extends BaseActivity {
         rvPreview.setLayoutManager(new LinearLayoutManager(this));
 
         btnPickFile.setOnClickListener(v -> openFilePicker());
+        btnOnlineImport.setOnClickListener(v -> showOnlineUniversityDialog());
         btnReselect.setOnClickListener(v -> resetToInitial());
         btnConfirm.setOnClickListener(v -> saveCourses());
+    }
+
+    private void showOnlineUniversityDialog() {
+        String[] universities = {"中山大学"};
+        new AlertDialog.Builder(this)
+                .setTitle("选择大学")
+                .setItems(universities, (dialog, which) -> {
+                    Intent intent = new Intent(this, OnlineTimetableImportActivity.class);
+                    intent.putExtra(OnlineTimetableImportActivity.EXTRA_UNIVERSITY_NAME, universities[which]);
+                    intent.putExtra(OnlineTimetableImportActivity.EXTRA_LOGIN_URL, "https://jwxt.sysu.edu.cn/");
+                    startActivity(intent);
+                })
+                .show();
     }
 
     private void openFilePicker() {
@@ -271,8 +287,13 @@ public class ImportTimetableActivity extends BaseActivity {
 
         new Thread(() -> {
             DBManager db = new DBManager(this);
-            db.deleteAllCourses();
-            db.insertCourses(parsedCourses);
+            try {
+                db.deleteAllCourses();
+                db.insertCourses(parsedCourses);
+                db.ensureCourseAssistantTodoMessage();
+            } finally {
+                db.close();
+            }
 
             runOnUiThread(() -> {
                 Toast.makeText(this,

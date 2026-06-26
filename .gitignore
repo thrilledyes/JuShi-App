@@ -5,6 +5,9 @@ local.properties
 .gradle/
 build/
 
+# Large local model artifacts
+app/src/main/assets/uie_model/*.onnx
+
 # IDE
 .idea/
 *.iml

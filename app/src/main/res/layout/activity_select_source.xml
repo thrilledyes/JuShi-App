@@ -46,6 +46,14 @@
         android:text="保存选择"
         android:textColor="?attr/colorSurface" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/btnPreviewEditSources"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@android:color/darker_gray"
+        android:text="预览与编辑"
+        android:textColor="?attr/colorSurface" />
 
+</LinearLayout>
 

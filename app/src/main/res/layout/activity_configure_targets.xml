@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="聊天软件填写群聊名称，学习平台填写课程名称；每行一个，可多行。"
+            android:text="为每个监听对象选择一个绑定课程；留空表示监听该消息源全部消息。"
             android:textColor="@android:color/darker_gray" />
 
         <LinearLayout

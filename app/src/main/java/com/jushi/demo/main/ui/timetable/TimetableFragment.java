@@ -76,7 +76,12 @@ public class TimetableFragment extends Fragment {
 
         new Thread(() -> {
             DBManager db = new DBManager(requireContext());
-            List<Course> courses = db.getAllCourses();
+            List<Course> courses;
+            try {
+                courses = db.getAllCourses();
+            } finally {
+                db.close();
+            }
 
             requireActivity().runOnUiThread(() -> {
                 if (courses.isEmpty()) {

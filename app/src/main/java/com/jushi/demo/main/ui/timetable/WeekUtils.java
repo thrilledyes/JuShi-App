@@ -39,13 +39,47 @@ public class WeekUtils {
     }
 
     public static int getCurrentWeek(Context context) {
-        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getInt(KEY_CURRENT_WEEK, 1);
+        return calculateWeekForDate(System.currentTimeMillis(), getSemesterStart(context));
     }
 
     public static void setCurrentWeek(Context context, int week) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .edit().putInt(KEY_CURRENT_WEEK, week).apply();
+    }
+
+    public static int calculateWeekForDate(long dateMillis, long semesterStart) {
+        long start = startOfDayMillis(semesterStart);
+        long date = startOfDayMillis(dateMillis);
+        long dayDiff = (date - start) / 86400000L;
+        int week = (int) (dayDiff / 7L) + 1;
+        if (week < 1) {
+            return 1;
+        }
+        if (week > 30) {
+            return 30;
+        }
+        return week;
+    }
+
+    public static int getTodayColumnForWeek(int weekNum, long semesterStart) {
+        long start = startOfDayMillis(semesterStart);
+        long today = startOfDayMillis(System.currentTimeMillis());
+        long displayedWeekStart = start + (weekNum - 1L) * 7L * 86400000L;
+        long dayDiff = (today - displayedWeekStart) / 86400000L;
+        if (dayDiff < 0 || dayDiff > 6) {
+            return -1;
+        }
+        return (int) dayDiff;
+    }
+
+    private static long startOfDayMillis(long millis) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(millis);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTimeInMillis();
     }
 
     public static int getAcademicYear(Context context) {

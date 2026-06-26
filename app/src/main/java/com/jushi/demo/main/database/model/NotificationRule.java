@@ -5,6 +5,8 @@ public class NotificationRule {
     public String packageName;
     public String sourceName;
     public String groupName;
+    public int courseId;
+    public String courseName;
     public boolean enabled = true;
     public long createdAt;
     public long updatedAt;

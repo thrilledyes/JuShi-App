@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "catcher.db";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 6;
 
     public DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -21,6 +21,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(DBSchema.CREATE_AUTH_SESSION);
         db.execSQL(DBSchema.CREATE_COURSES);
         db.execSQL(DBSchema.CREATE_NOTIFICATION_RULE);
+        db.execSQL(DBSchema.CREATE_TODO_MESSAGE);
+        db.execSQL(DBSchema.CREATE_COURSE_REMINDER_RULE);
     }
 
     @Override
@@ -28,6 +30,41 @@ public class DBHelper extends SQLiteOpenHelper {
         if (oldVersion < 2) {
             db.execSQL(DBSchema.CREATE_COURSES);
             db.execSQL(DBSchema.CREATE_NOTIFICATION_RULE);
+        }
+        if (oldVersion < 3) {
+            db.execSQL(DBSchema.CREATE_TODO_MESSAGE);
+            db.execSQL(DBSchema.CREATE_COURSE_REMINDER_RULE);
+        }
+        if (oldVersion < 4) {
+            try {
+                db.execSQL("ALTER TABLE " + DBSchema.TABLE_TODO_MESSAGE
+                        + " ADD COLUMN pinned_at INTEGER DEFAULT 0");
+            } catch (Exception ignored) {
+            }
+        }
+        if (oldVersion < 5) {
+            try {
+                db.execSQL("ALTER TABLE " + DBSchema.TABLE_NOTIFICATION_RULE
+                        + " ADD COLUMN course_id INTEGER DEFAULT 0");
+            } catch (Exception ignored) {
+            }
+            try {
+                db.execSQL("ALTER TABLE " + DBSchema.TABLE_NOTIFICATION_RULE
+                        + " ADD COLUMN course_name TEXT");
+            } catch (Exception ignored) {
+            }
+        }
+        if (oldVersion < 6) {
+            try {
+                db.execSQL("ALTER TABLE " + DBSchema.TABLE_TODO_MESSAGE
+                        + " ADD COLUMN completed_at INTEGER DEFAULT 0");
+            } catch (Exception ignored) {
+            }
+            try {
+                db.execSQL("ALTER TABLE " + DBSchema.TABLE_TODO_MESSAGE
+                        + " ADD COLUMN reminder_at INTEGER DEFAULT 0");
+            } catch (Exception ignored) {
+            }
         }
     }
 
