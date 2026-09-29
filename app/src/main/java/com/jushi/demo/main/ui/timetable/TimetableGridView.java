@@ -21,11 +21,12 @@ import java.util.List;
 
 public class TimetableGridView extends View {
 
-    private static final float LABEL_WIDTH_DP = 70;
-    private static final float HEADER_HEIGHT_DP = 48;
-    private static final float CELL_MIN_WIDTH_DP = 96;
-    private static final float ROW_HEIGHT_DP = 82;
-    private static final float ROW_MIN_HEIGHT_DP = 48;
+    private final boolean compact;
+    private final float labelWidthDp;
+    private final float headerHeightDp;
+    private final float cellMinWidthDp;
+    private final float rowHeightDp;
+    private final float rowMinHeightDp;
 
     private final TextPaint headerPaint;
     private final TextPaint labelPaint;
@@ -33,6 +34,9 @@ public class TimetableGridView extends View {
     private final TextPaint courseDetailPaint;
     private final Paint gridPaint;
     private final Paint headerBgPaint;
+    private final Paint todayHeaderBgPaint;
+    private final Paint todayColumnBgPaint;
+    private final Paint todayCourseStrokePaint;
     private final Paint labelBgPaint;
     private final Paint labelBgAltPaint;
     private final Paint surfacePaint;
@@ -46,6 +50,7 @@ public class TimetableGridView extends View {
     private int currentWeek = 1;
     private long semesterStart;
     private String[] dateLabels = new String[7];
+    private int todayColumn = -1;
     private final Course[][] grid;
     private boolean showLabelColumn = true;
 
@@ -61,12 +66,30 @@ public class TimetableGridView extends View {
         super(context, attrs);
         density = context.getResources().getDisplayMetrics().density;
         displayWidthPx = context.getResources().getDisplayMetrics().widthPixels;
+        compact = WeekUtils.isCompactMode(displayWidthPx, density);
+
+        labelWidthDp = compact ? 48 : 70;
+        headerHeightDp = compact ? 40 : 48;
+        cellMinWidthDp = compact ? 52 : 96;
+        rowHeightDp = compact ? 50 : 82;
+        rowMinHeightDp = compact ? 40 : 48;
 
         surfacePaint = new Paint();
         surfacePaint.setColor(Color.WHITE);
 
         headerBgPaint = new Paint();
         headerBgPaint.setColor(0xFF1565C0);
+
+        todayHeaderBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        todayHeaderBgPaint.setColor(0xFF0D47A1);
+
+        todayColumnBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        todayColumnBgPaint.setColor(0xFFFFF8E1);
+
+        todayCourseStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        todayCourseStrokePaint.setColor(0xFFFFD54F);
+        todayCourseStrokePaint.setStrokeWidth(dpToPx(2));
+        todayCourseStrokePaint.setStyle(Paint.Style.STROKE);
 
         labelBgPaint = new Paint();
         labelBgPaint.setColor(0xFFF5F5F5);
@@ -76,24 +99,24 @@ public class TimetableGridView extends View {
 
         headerPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         headerPaint.setColor(Color.WHITE);
-        headerPaint.setTextSize(dpToPx(11));
+        headerPaint.setTextSize(dpToPx(compact ? 10 : 11));
         headerPaint.setTextAlign(Paint.Align.CENTER);
         headerPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
         labelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         labelPaint.setColor(0xFF666666);
-        labelPaint.setTextSize(dpToPx(10));
+        labelPaint.setTextSize(dpToPx(compact ? 9 : 10));
         labelPaint.setTextAlign(Paint.Align.CENTER);
 
         courseNamePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         courseNamePaint.setColor(Color.WHITE);
-        courseNamePaint.setTextSize(dpToPx(12));
+        courseNamePaint.setTextSize(dpToPx(compact ? 10 : 12));
         courseNamePaint.setTypeface(Typeface.DEFAULT_BOLD);
         fmCourseName = courseNamePaint.getFontMetrics();
 
         courseDetailPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         courseDetailPaint.setColor(0xEEFFFFFF);
-        courseDetailPaint.setTextSize(dpToPx(9));
+        courseDetailPaint.setTextSize(dpToPx(compact ? 8 : 9));
         fmCourseDetail = courseDetailPaint.getFontMetrics();
 
         gridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -114,6 +137,7 @@ public class TimetableGridView extends View {
         this.currentWeek = week;
         this.semesterStart = semStart;
         this.dateLabels = WeekUtils.getDateLabels(week, semStart);
+        this.todayColumn = WeekUtils.getTodayColumnForWeek(week, semStart);
         buildGrid();
         invalidate();
     }
@@ -146,8 +170,8 @@ public class TimetableGridView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        labelWidth = showLabelColumn ? dpToPx(LABEL_WIDTH_DP) : 0;
-        headerHeight = dpToPx(HEADER_HEIGHT_DP);
+        labelWidth = showLabelColumn ? dpToPx(labelWidthDp) : 0;
+        headerHeight = dpToPx(headerHeightDp);
 
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
@@ -155,16 +179,17 @@ public class TimetableGridView extends View {
             widthSize = displayWidthPx;
         }
 
-        float minCell = dpToPx(CELL_MIN_WIDTH_DP);
+        float minCell = dpToPx(cellMinWidthDp);
         float availWidth = widthSize - labelWidth;
-        cellWidth = Math.max(minCell, availWidth / 7f);
+        float colsTarget = compact ? 6.5f : 7f;
+        cellWidth = Math.max(minCell, availWidth / colsTarget);
 
         totalWidth = (int) (labelWidth + 7 * cellWidth);
 
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        float minRow = dpToPx(ROW_MIN_HEIGHT_DP);
-        float defaultRow = dpToPx(ROW_HEIGHT_DP);
+        float minRow = dpToPx(rowMinHeightDp);
+        float defaultRow = dpToPx(rowHeightDp);
 
         if (heightMode == MeasureSpec.EXACTLY || heightMode == MeasureSpec.AT_MOST) {
             float calcRow = (heightSize - headerHeight) / (float) WeekUtils.MAX_PERIODS;
@@ -184,6 +209,11 @@ public class TimetableGridView extends View {
 
         canvas.drawRect(0, 0, totalWidth, totalHeight, surfacePaint);
 
+        if (todayColumn >= 0) {
+            float left = labelWidth + todayColumn * cellWidth;
+            canvas.drawRect(left, headerHeight, left + cellWidth, totalHeight, todayColumnBgPaint);
+        }
+
         // Corner cell
         if (showLabelColumn) {
             canvas.drawRect(0, 0, labelWidth, headerHeight, headerBgPaint);
@@ -193,7 +223,13 @@ public class TimetableGridView extends View {
         String[] dayNames = {"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
         for (int d = 0; d < 7; d++) {
             float left = labelWidth + d * cellWidth;
-            canvas.drawRect(left, 0, left + cellWidth, headerHeight, headerBgPaint);
+            canvas.drawRect(
+                    left,
+                    0,
+                    left + cellWidth,
+                    headerHeight,
+                    d == todayColumn ? todayHeaderBgPaint : headerBgPaint
+            );
 
             String label = dayNames[d];
             if (dateLabels[d] != null) {
@@ -247,22 +283,30 @@ public class TimetableGridView extends View {
         int endP = Math.min(course.getEndPeriod() - 1, WeekUtils.MAX_PERIODS - 1);
         int span = endP - startP + 1;
 
-        float left = labelWidth + dayIdx * cellWidth + dpToPx(2);
-        float top = headerHeight + startP * rowHeight + dpToPx(2);
-        float right = labelWidth + (dayIdx + 1) * cellWidth - dpToPx(2);
-        float bottom = headerHeight + (startP + span) * rowHeight - dpToPx(2);
+        float cellMargin = dpToPx(compact ? 1.5f : 2f);
+        float cellRadius = dpToPx(compact ? 3 : 4);
+        float textPad = dpToPx(compact ? 4 : 5);
+        float topOffset = dpToPx(compact ? 3 : 4);
+        float maxYOffset = dpToPx(compact ? 2 : 3);
+
+        float left = labelWidth + dayIdx * cellWidth + cellMargin;
+        float top = headerHeight + startP * rowHeight + cellMargin;
+        float right = labelWidth + (dayIdx + 1) * cellWidth - cellMargin;
+        float bottom = headerHeight + (startP + span) * rowHeight - cellMargin;
 
         RectF rect = new RectF(left, top, right, bottom);
         int bgColor = (course.getColor() & 0x00FFFFFF) | 0xCC000000;
         Paint cellPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         cellPaint.setColor(bgColor);
-        canvas.drawRoundRect(rect, dpToPx(4), dpToPx(4), cellPaint);
+        canvas.drawRoundRect(rect, cellRadius, cellRadius, cellPaint);
+        if (dayIdx == todayColumn) {
+            canvas.drawRoundRect(rect, cellRadius, cellRadius, todayCourseStrokePaint);
+        }
 
-        float pad = dpToPx(5);
-        float textLeft = left + pad;
-        float textWidth = right - textLeft - pad;
-        float curY = top + dpToPx(4);
-        float maxY = bottom - dpToPx(3);
+        float textLeft = left + textPad;
+        float textWidth = right - textLeft - textPad;
+        float curY = top + topOffset;
+        float maxY = bottom - maxYOffset;
         float detailLineH = (fmCourseDetail.descent - fmCourseDetail.ascent) + dpToPx(1);
 
         // Course name with text wrapping via StaticLayout
@@ -281,7 +325,7 @@ public class TimetableGridView extends View {
                 nameHeight = lines * (fmCourseName.descent - fmCourseName.ascent + dpToPx(1));
             }
             canvas.save();
-            canvas.clipRect(textLeft, curY, right - pad, curY + nameHeight);
+            canvas.clipRect(textLeft, curY, right - textPad, curY + nameHeight);
             canvas.translate(textLeft, curY);
             nameLayout.draw(canvas);
             canvas.restore();
@@ -292,7 +336,7 @@ public class TimetableGridView extends View {
         String teacher = course.getTeacher();
         if (teacher != null && !teacher.isEmpty() && curY + detailLineH < maxY) {
             canvas.save();
-            canvas.clipRect(textLeft, curY, right - pad, curY + detailLineH);
+            canvas.clipRect(textLeft, curY, right - textPad, curY + detailLineH);
             canvas.drawText(teacher, textLeft, curY - fmCourseDetail.ascent, courseDetailPaint);
             canvas.restore();
             curY += detailLineH + dpToPx(1);
@@ -312,7 +356,7 @@ public class TimetableGridView extends View {
                 float locHeight = locLines * detailLineH;
                 if (curY + locHeight > maxY) locHeight = maxY - curY;
                 canvas.save();
-                canvas.clipRect(textLeft, curY, right - pad, curY + locHeight);
+                canvas.clipRect(textLeft, curY, right - textPad, curY + locHeight);
                 canvas.translate(textLeft, curY);
                 locLayout.draw(canvas);
                 canvas.restore();

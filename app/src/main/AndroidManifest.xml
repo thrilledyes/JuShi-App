@@ -1,25 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
-    <uses-permission android:name="android.permission.READ_NOTIFICATION_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.JuShiDemo">
         <service
             android:name=".utils.BackgroundNotificationListenerService"
+            android:directBootAware="true"
             android:enabled="true"
             android:exported="true"
             android:label="Notification Listener"
-            android:directBootAware="true"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".ui.todo.TodoChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.todo.TodoDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.todo.PersonalTodoEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.todo.PersonalTodoAddActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.todo.PersonalTodoBrowseActivity"
+            android:exported="false" />
+        <receiver
+            android:name=".utils.CourseReminderReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".utils.PersonalTodoReminderReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <activity
+            android:name=".ui.settings.AvatarPickerActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.settings.GeneralSettingsActivity"
             android:exported="false" />
@@ -33,10 +87,22 @@
             android:name=".ui.imports.ImportTimetableActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.imports.EasyHpcImportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.imports.OnlineTimetableImportActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.imports.ConfigureTargetsActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.imports.PreviewEditSourcesActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.imports.SelectSourceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.message.MessageGroupActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
