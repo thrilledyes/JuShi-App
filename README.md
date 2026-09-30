@@ -1,228 +1,104 @@
 # 聚事 JuShi
 
-聚事是一个面向课程、作业和待办管理的 Android 应用。当前版本以 `app` 为唯一业务模块，核心能力包括课表导入与展示、通知消息源监听、AI 作业信息抽取、超算习堂作业同步、待办管理和基础设置。
+简体中文 | [English](README_EN.md)
 
-## 项目信息
+一款 Android 校园助手：把教务系统课表与散落在微信、QQ、学习通等平台的群消息汇聚到一个应用里。
 
-| 项目 | 内容 |
-| --- | --- |
-| 应用名 | 聚事 |
-| Gradle 项目名 | `JuShiUc01Demo` |
-| Application ID | `com.jushi.demo.uc01` |
-| Namespace | `com.jushi.demo.main` |
-| 语言 | Java |
-| minSdk | 24 |
-| targetSdk / compileSdk | 36 |
-| Android Gradle Plugin | 8.5.2 |
-| Java 版本 | 17 |
+| 项目 | 值 |
+|------|-----|
+| 应用 ID | `com.jushi.demo.uc01` |
+| 命名空间 | `com.jushi.demo.main` |
+| 语言 / 构建 | Java 17 · Gradle Wrapper 8.7 · AGP 8.5.2 |
+| SDK | minSdk 24 / targetSdk 36 / compileSdk 36 |
+| 主要依赖 | AppCompat 1.7.0 · Material 1.12.0 · RecyclerView 1.3.2 · Room 2.6.1 |
 
-## 主要功能
+## 核心功能
 
-### 待办
+- **课表导入**：系统文件选择器选取教务系统导出的 `.doc` / `.docx`，自动识别 Flat OPC XML 与 ZIP 两种 Word 格式，解析表格并还原跨节次合并单元格；导入前可预览并逐条编辑课程名、教师、地点、星期、节次、周次。
+- **课表展示**：自定义 Canvas 网格，7 天 × 11 节次；跨节次课程合并为一张彩色卡片；支持周次切换（1–30 周）、按周次范围过滤、点击查看课程详情；无数据时引导导入。
+- **消息源接入**：多选微信 / 企业微信 / QQ / 学习通 / 超算习堂 / 雨课堂，并为每个来源填写群聊名或课程名，生成监听规则。
+- **后台消息采集**：`NotificationListenerService` 在系统通知到达时解析消息（来源识别、群名清洗、正文提取），按规则过滤后以 JSON 追加落盘，最多保留 500 条。
+- **外观设置**：字体大小（0.9 / 1.0 / 1.1）、全局加粗、主题（跟随系统 / 浅色 / 深色），保存后即时生效。
+- **待办、消息**：入口已就绪，内容待实现。
 
-- 展示自动识别的课程作业、DDL 和个人待办。
-- 支持新增、编辑、删除、完成、置顶和提醒。
-- 支持将待办写入系统日历。
-- 支持对话式查看课程/任务消息。
+## 软件架构
 
-### 课表
+单 Activity + 多 Fragment，按功能分包，UI 层直接调用数据层与采集层。
 
-- 支持导入 `.doc` / `.docx` 课程表文件。
-- 支持在线导入课表。
-- 以周视图展示课程，支持切换周次。
-- 支持课程提醒规则。
+```
+MainActivity（底部 4 Tab + 导入菜单）
+├─ ui.timetable   课表：TimetableFragment → TimetableGridView(Canvas) / PeriodLabelView / WeekUtils
+├─ ui.imports     导入：SelectSourceActivity → ConfigureTargetsActivity（消息源规则）
+│                       ImportTimetableActivity → DocxParser（课表解析）
+├─ ui.settings    设置：SettingsFragment → General / Authority / Profile SettingsActivity
+│                       UiPreferences（持久化）+ UiContextWrapper（字体缩放）
+├─ ui.todo · ui.message          占位
+├─ utils          采集：BackgroundNotificationListenerService → NotificationMessageParser
+│                       → NotificationRuleStore（规则）→ FilteredNotificationJsonStore（落盘）
+└─ data           持久化：Room —— Course 实体 / CourseDao / CourseDatabase
 
-### 消息源监听
+BaseActivity：注入字体缩放、应用主题模式、递归遍历 View 树统一字重
+```
 
-- 支持选择微信、企业微信、QQ、学习通作为通知消息源。
-- 支持为消息源配置监听对象。
-- 支持将监听对象绑定到本地课程，用于“下次课/下节课”等相对时间归一化。
-- 通知监听服务会筛选疑似作业/DDL 消息，使用本地 UIE 模型抽取任务和时间。
+**数据流**
 
-### 超算习堂同步
+| 链路 | 路径 |
+|------|------|
+| 课表导入 | SAF 选文件 → `DocxParser.parse()` → 预览/编辑 → `CourseDao.deleteAll() + insertAll()` → Room |
+| 课表展示 | `CourseDao.getAllCourses()` → `WeekUtils` 按周过滤 → `TimetableGridView` 绘制 |
+| 消息采集 | 系统通知 → 解析为 `MessageModel` → 规则匹配 → 追加写入 `filtered_notifications.json` |
+| 界面偏好 | `UiPreferences`(SharedPreferences) → `UiContextWrapper` / `BaseActivity` 全局生效 |
 
-- 支持输入超算习堂账号密码抓取作业。
-- 抓取后按超算习堂课程来源分组，用户可选择要导入的来源。
-- 每个来源可绑定到本地课程，也可以不绑定。
-- 导入成功后自动回到主界面。
-- 按来源记录上次成功同步时间，只展示上次同步后新创建的作业。
-- 若作业创建时间字段无法解析，则不会被时间戳过滤，避免漏导；重复导入由 `message_hash` 去重兜底。
+**存储**
 
-### 设置
-
-- 支持字体大小、字体粗细和主题模式设置。
-- 支持头像、个人资料和权限相关页面。
+| 数据 | 位置 |
+|------|------|
+| 课程 | Room `jushi_courses.db` → 表 `courses` |
+| 界面偏好 | SharedPreferences `jushi_ui_prefs` |
+| 学期起始日 / 当前周 | SharedPreferences `jushi_timetable_prefs` |
+| 消息源选择 | SharedPreferences `jushi_demo_prefs` |
+| 监听规则 | `filesDir/notification_rules.json`（`{sources:[{packageName,groupName}]}`） |
+| 采集结果 | `filesDir/filtered_notifications.json`（最近 500 条） |
 
 ## 目录结构
 
-```text
-jushi_main_v2/
-├── app/
-│   ├── build.gradle
-│   ├── proguard-rules.pro
-│   └── src/main/
-│       ├── AndroidManifest.xml
-│       ├── assets/uie_model/
-│       │   ├── uie_mini.onnx
-│       │   └── vocab.txt
-│       ├── java/com/jushi/demo/main/
-│       │   ├── ai/                 # UIE 模型推理
-│       │   ├── chaosuan/           # 超算习堂抓取、归一化和导入
-│       │   ├── data/entity/        # 课程实体
-│       │   ├── database/           # SQLite schema、DAO 风格管理器和数据模型
-│       │   ├── ui/imports/         # 课表导入、消息源配置、超算习堂导入
-│       │   ├── ui/message/         # 消息列表和消息组页面
-│       │   ├── ui/settings/        # 设置页面
-│       │   ├── ui/timetable/       # 课表页面
-│       │   ├── ui/todo/            # 待办页面
-│       │   └── utils/              # 通知监听、提醒、时间归一化、日历导出
-│       └── res/                    # 布局、菜单、主题、图标和字符串资源
-├── gradle/                         # Gradle Wrapper 文件
-├── build.gradle
-├── settings.gradle
-├── gradle.properties
-├── gradlew
-├── gradlew.bat
-├── local.properties
-└── README.md
+```
+JuShi-App/
+├── app/src/main/
+│   ├── AndroidManifest.xml
+│   ├── java/com/jushi/demo/main/
+│   │   ├── MainActivity.java        # 主入口：4 Tab + 导入菜单
+│   │   ├── BaseActivity.java        # 字体缩放 / 主题 / 全局字重
+│   │   ├── data/                    # Room：Course、CourseDao、CourseDatabase
+│   │   ├── ui/timetable/            # 课表展示
+│   │   ├── ui/imports/              # 课表导入、消息源与监听目标配置
+│   │   ├── ui/settings/             # 设置页与偏好持久化
+│   │   ├── ui/todo/ · ui/message/   # 占位 Tab
+│   │   └── utils/                   # 通知监听、解析、规则、落盘
+│   └── res/                         # layout / menu / values / values-night
+├── gradle/wrapper · gradlew(.bat)   # Gradle Wrapper 8.7
+├── settings.gradle · build.gradle · gradle.properties
+└── README.md · README_EN.md
 ```
 
-## 核心模块
+## 构建与部署
 
-### 数据层
-
-当前主数据层使用自定义 SQLite：
-
-- `DBSchema` 定义表结构。
-- `DBHelper` 管理数据库创建、升级和兼容性补列。
-- `DBManager` 封装课程、通知规则、原始消息、标准化记录、待办和提醒规则的读写。
-
-主要数据表：
-
-- `courses`
-- `notification_rule`
-- `raw_message`
-- `normalized_record`
-- `raw_normalized_map`
-- `todo_message`
-- `course_reminder_rule`
-
-### 通知识别链路
-
-```text
-系统通知
-  -> BackgroundNotificationListenerService
-  -> NotificationMessageParser
-  -> notification_rule 匹配
-  -> UIEPredictor 抽取任务和时间
-  -> TimeNormalizer 归一化时间
-  -> DBManager 写入 raw / normalized / todo
-```
-
-### 超算习堂导入链路
-
-```text
-EasyHpcImportActivity
-  -> EasyHpcHomeworkClient 登录并抓取课程/作业
-  -> EasyHpcHomeworkNormalizer 解析标题、描述、截止时间、创建时间
-  -> 按课程来源过滤上次同步前的旧作业
-  -> 用户选择来源并绑定本地课程
-  -> EasyHpcHomeworkSyncer 写入数据库
-```
-
-### 课表导入链路
-
-```text
-ImportTimetableActivity
-  -> DocxParser 解析 doc/docx
-  -> 课程预览
-  -> DBManager 写入 courses
-  -> TimetableFragment / TimetableGridView 展示
-```
-
-## 权限说明
-
-应用在 `AndroidManifest.xml` 中声明以下权限：
-
-- `INTERNET`：超算习堂登录和作业抓取。
-- `POST_NOTIFICATIONS`：通知相关能力。
-- `BIND_NOTIFICATION_LISTENER_SERVICE`：通知监听服务。
-- `READ_CALENDAR` / `WRITE_CALENDAR`：待办提醒导出到日历。
-- `RECEIVE_BOOT_COMPLETED`：重启后恢复课程/待办提醒。
-- `READ_EXTERNAL_STORAGE` / `MANAGE_EXTERNAL_STORAGE`：课表文件导入。
-- `CAMERA`：头像或资料相关页面预留能力。
-
-## 构建环境
-
-需要准备：
-
-- JDK 17
-- Android SDK Platform 36
-- Android Studio 最新稳定版
-- 可访问 `maven.aliyun.com` 的网络环境
-
-`settings.gradle` 已配置阿里云 Maven 镜像：
-
-```gradle
-maven { url "https://maven.aliyun.com/repository/google" }
-maven { url "https://maven.aliyun.com/repository/central" }
-maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
-```
-
-## 构建与运行
-
-### Android Studio
-
-1. 打开 `jushi_main_v2` 项目根目录。
-2. 等待 Gradle Sync 完成。
-3. 连接真机或启动模拟器。
-4. 点击 Run 运行 `app`。
-
-### 命令行
-
-Windows:
-
-```powershell
-.\gradlew.bat :app:assembleDebug
-```
-
-macOS / Linux:
+**环境**：JDK 17+、Android SDK（Platform 36 + Build Tools 34）；配置 `ANDROID_HOME`，或在项目根目录创建 `local.properties` 写入 `sdk.dir=<SDK 路径>`。
 
 ```bash
-./gradlew :app:assembleDebug
+./gradlew assembleDebug     # Windows: gradlew.bat assembleDebug
+# 产物：app/build/outputs/apk/debug/app-debug.apk
+
+./gradlew installDebug      # 安装到已连接的设备或模拟器
 ```
 
-Debug APK 默认输出到：
+Android Studio 用户直接打开项目根目录，等待 Gradle 同步后点击 Run 即可。消息采集功能需在**系统设置 → 通知使用权**中授权「聚事」。
 
-```text
-app/build/outputs/apk/debug/
-```
+**验证状态**：`assembleDebug` 构建通过，产出 `app-debug.apk`；核心逻辑闭环验证（课表解析、周次与节次计算、通知解析→规则过滤→落盘）共 52 项断言全部通过。
 
-## 本地配置
+## 已知限制
 
-`local.properties` 用于指定 Android SDK 路径，例如：
-
-```properties
-sdk.dir=D\:\\develop\\Android\\Sdk
-```
-
-如果换到其他机器，请按本机 Android SDK 路径调整该文件，或配置 `ANDROID_HOME`。
-
-## 资产说明
-
-`app/src/main/assets/uie_model/` 下的模型文件是通知作业识别功能所需资源：
-
-- `uie_mini.onnx`
-- `vocab.txt`
-
-这些文件会随 App 打包，不能删除。
-
-## 清理说明
-
-当前目录已移除以下非运行必要内容：
-
-- Git / IDE / Gradle 生成缓存
-- `app/build` 构建产物
-- 顶层历史占位目录和设计文档
-
-保留内容均与构建、运行或项目维护直接相关。
+- 待办、消息 Tab 为空壳；个人资料、权限设置页为静态占位。
+- 应用内未内置通知使用权引导页，需手动在系统设置中开启。
+- 学期起始日期默认硬编码为 2026-02-16，暂无设置入口。
+- 课表导入为全量替换（先清空再写入），不支持增量合并。
