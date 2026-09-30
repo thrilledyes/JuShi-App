@@ -30,6 +30,14 @@
         android:layout_marginTop="16dp"
         android:text="@string/import_timetable_btn_pick" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnOnlineImport"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/import_timetable_btn_online" />
+
     <FrameLayout
         android:id="@+id/previewContainer"
         android:layout_width="match_parent"

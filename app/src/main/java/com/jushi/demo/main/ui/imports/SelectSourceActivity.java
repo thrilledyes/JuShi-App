@@ -19,9 +19,9 @@ import java.util.List;
 public class SelectSourceActivity extends BaseActivity {
     public static final String PREFS_NAME = "jushi_demo_prefs";
     public static final String KEY_SELECTED_SOURCE_PACKAGES = "selected_source_packages";
-    public static final String KEY_NOTIFICATION_RULES_JSON = "notification_rules_json";
     public static final String EXTRA_SELECTED_SOURCE_PACKAGES = "extra_selected_source_packages";
     public static final String EXTRA_SELECTED_SOURCE_NAMES = "extra_selected_source_names";
+    private static final int REQUEST_CONFIGURE_TARGETS = 1001;
 
     private final List<SourceItem> sourceItems = new ArrayList<>();
     private TextView tvSelectionResult;
@@ -33,6 +33,7 @@ public class SelectSourceActivity extends BaseActivity {
 
         RecyclerView recyclerView = findViewById(R.id.rvSources);
         Button btnSave = findViewById(R.id.btnSaveSources);
+        Button btnPreviewEdit = findViewById(R.id.btnPreviewEditSources);
         tvSelectionResult = findViewById(R.id.tvSelectionResult);
 
         buildDefaultSources();
@@ -42,6 +43,8 @@ public class SelectSourceActivity extends BaseActivity {
         recyclerView.setAdapter(new SourceAdapter(sourceItems));
 
         btnSave.setOnClickListener(v -> goToTargetConfigPage());
+        btnPreviewEdit.setOnClickListener(v ->
+                startActivity(new Intent(this, PreviewEditSourcesActivity.class)));
         updateResultText();
     }
 
@@ -51,8 +54,6 @@ public class SelectSourceActivity extends BaseActivity {
         sourceItems.add(new SourceItem("com.tencent.wework", "企业微信", false));
         sourceItems.add(new SourceItem("com.tencent.mobileqq", "QQ", false));
         sourceItems.add(new SourceItem("com.chaoxing.mobile", "学习通", false));
-        sourceItems.add(new SourceItem("com.huawei.easyhpc", "超算习堂", false));
-        sourceItems.add(new SourceItem("com.yuketang.app", "雨课堂", false));
     }
 
     private void recoverSelections() {
@@ -90,7 +91,15 @@ public class SelectSourceActivity extends BaseActivity {
         Intent intent = new Intent(this, ConfigureTargetsActivity.class);
         intent.putExtra(EXTRA_SELECTED_SOURCE_PACKAGES, packages.toString());
         intent.putExtra(EXTRA_SELECTED_SOURCE_NAMES, names.toString());
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_CONFIGURE_TARGETS);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CONFIGURE_TARGETS && resultCode == RESULT_OK) {
+            finish();
+        }
     }
 
     private void updateResultText() {

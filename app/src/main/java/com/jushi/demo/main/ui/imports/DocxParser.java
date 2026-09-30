@@ -60,8 +60,11 @@ public class DocxParser {
         public List<Course> courses;
         public String error;
         public String title;
+        public int academicYear;
+        public int semester; // 1=first, 2=second, 0=unknown
 
         public boolean isSuccess() { return error == null && courses != null; }
+        public boolean hasSemesterInfo() { return academicYear > 0 && semester > 0; }
     }
 
     public static ParseResult parse(byte[] fileBytes) {
@@ -86,6 +89,9 @@ public class DocxParser {
                 result.error = "无法提取文档内容";
                 return result;
             }
+
+            result.title = extractTitleText(docRoot);
+            parseTitleSemester(result);
 
             NodeList tblList = docRoot.getElementsByTagNameNS(NS_W, "tbl");
             if (tblList == null || tblList.getLength() == 0) {
@@ -177,6 +183,46 @@ public class DocxParser {
         }
 
         return result;
+    }
+
+    private static String extractTitleText(Element docRoot) {
+        // Navigate to body, then collect text from paragraphs before the first table
+        Element body = getFirstChildByLocalName(docRoot, "body");
+        if (body == null) return "";
+
+        NodeList bodyChildren = body.getChildNodes();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < bodyChildren.getLength(); i++) {
+            Node child = bodyChildren.item(i);
+            if (child.getNodeType() == Node.ELEMENT_NODE
+                    && "tbl".equals(child.getLocalName())) {
+                break;
+            }
+            if (child.getNodeType() == Node.ELEMENT_NODE
+                    && "p".equals(child.getLocalName())) {
+                NodeList tNodes = ((Element) child).getElementsByTagNameNS(NS_W, "t");
+                for (int j = 0; j < tNodes.getLength(); j++) {
+                    String text = tNodes.item(j).getTextContent();
+                    if (text != null) sb.append(text);
+                }
+            }
+        }
+        return sb.toString().trim();
+    }
+
+    private static void parseTitleSemester(ParseResult result) {
+        if (result.title == null || result.title.isEmpty()) return;
+
+        // Match "2025学年度第二学期" or "2025学年第二学期"
+        Matcher m = Pattern.compile("(\\d{4})\\s*学年度?\\s*第\\s*([一二三])\\s*学期")
+                .matcher(result.title);
+        if (m.find()) {
+            result.academicYear = Integer.parseInt(m.group(1));
+            String semChar = m.group(2);
+            if ("一".equals(semChar)) result.semester = 1;
+            else if ("二".equals(semChar)) result.semester = 2;
+            else if ("三".equals(semChar)) result.semester = 3;
+        }
     }
 
     private static boolean isFlatOpc(byte[] bytes) {
