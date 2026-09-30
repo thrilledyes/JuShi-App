@@ -23,8 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.jushi.demo.main.BaseActivity;
 import com.jushi.demo.main.R;
-import com.jushi.demo.main.data.CourseDatabase;
 import com.jushi.demo.main.data.entity.Course;
+import com.jushi.demo.main.database.db.DBManager;
 import com.jushi.demo.main.ui.timetable.WeekUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -38,6 +38,7 @@ public class ImportTimetableActivity extends BaseActivity {
 
     private TextView tvStatus;
     private Button btnPickFile;
+    private Button btnOnlineImport;
     private View previewContainer;
     private RecyclerView rvPreview;
     private View actionButtons;
@@ -47,6 +48,8 @@ public class ImportTimetableActivity extends BaseActivity {
     private List<Course> parsedCourses;
     private String fileName;
     private CoursePreviewAdapter adapter;
+    private int parsedAcademicYear;
+    private int parsedSemester;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +58,7 @@ public class ImportTimetableActivity extends BaseActivity {
 
         tvStatus = findViewById(R.id.tvStatus);
         btnPickFile = findViewById(R.id.btnPickFile);
+        btnOnlineImport = findViewById(R.id.btnOnlineImport);
         previewContainer = findViewById(R.id.previewContainer);
         rvPreview = findViewById(R.id.rvPreview);
         actionButtons = findViewById(R.id.actionButtons);
@@ -64,8 +68,22 @@ public class ImportTimetableActivity extends BaseActivity {
         rvPreview.setLayoutManager(new LinearLayoutManager(this));
 
         btnPickFile.setOnClickListener(v -> openFilePicker());
+        btnOnlineImport.setOnClickListener(v -> showOnlineUniversityDialog());
         btnReselect.setOnClickListener(v -> resetToInitial());
         btnConfirm.setOnClickListener(v -> saveCourses());
+    }
+
+    private void showOnlineUniversityDialog() {
+        String[] universities = {"中山大学"};
+        new AlertDialog.Builder(this)
+                .setTitle("选择大学")
+                .setItems(universities, (dialog, which) -> {
+                    Intent intent = new Intent(this, OnlineTimetableImportActivity.class);
+                    intent.putExtra(OnlineTimetableImportActivity.EXTRA_UNIVERSITY_NAME, universities[which]);
+                    intent.putExtra(OnlineTimetableImportActivity.EXTRA_LOGIN_URL, "https://jwxt.sysu.edu.cn/");
+                    startActivity(intent);
+                })
+                .show();
     }
 
     private void openFilePicker() {
@@ -112,7 +130,13 @@ public class ImportTimetableActivity extends BaseActivity {
                     btnPickFile.setEnabled(true);
                     if (result.isSuccess()) {
                         parsedCourses = result.courses;
-                        showPreview();
+                        parsedAcademicYear = result.academicYear;
+                        parsedSemester = result.semester;
+                        if (result.hasSemesterInfo()) {
+                            showSemesterConfirmDialog();
+                        } else {
+                            showPreview();
+                        }
                     } else {
                         tvStatus.setText(result.error);
                         Toast.makeText(this, result.error, Toast.LENGTH_LONG).show();
@@ -127,6 +151,48 @@ public class ImportTimetableActivity extends BaseActivity {
                 });
             }
         }).start();
+    }
+
+    private void showSemesterConfirmDialog() {
+        long estimatedStart = WeekUtils.estimateSemesterStart(parsedAcademicYear, parsedSemester);
+        String semLabel = parsedSemester == 1 ? "第一学期" : "第二学期";
+        String dateStr = new java.text.SimpleDateFormat("yyyy年M月d日", java.util.Locale.getDefault())
+                .format(new java.util.Date(estimatedStart));
+        String dayOfWeek = new java.text.SimpleDateFormat("EEEE", java.util.Locale.getDefault())
+                .format(new java.util.Date(estimatedStart));
+        String msg = parsedAcademicYear + "学年度 " + semLabel + "\n\n"
+                + "预计开学日期:\n" + dateStr + " (" + dayOfWeek + ")\n\n"
+                + "日期正确吗？";
+
+        new AlertDialog.Builder(this)
+                .setTitle("检测到学期信息")
+                .setMessage(msg)
+                .setPositiveButton("确认", (dialog, which) -> {
+                    WeekUtils.setSemesterStart(this, estimatedStart);
+                    WeekUtils.setAcademicYear(this, parsedAcademicYear);
+                    WeekUtils.setSemester(this, parsedSemester);
+                    showPreview();
+                })
+                .setNegativeButton("手动调整", (dialog, which) -> {
+                    java.util.Calendar cal = java.util.Calendar.getInstance();
+                    cal.setTimeInMillis(estimatedStart);
+                    new android.app.DatePickerDialog(this,
+                            (view, year, month, dayOfMonth) -> {
+                                java.util.Calendar selected = java.util.Calendar.getInstance();
+                                selected.set(year, month, dayOfMonth, 0, 0, 0);
+                                selected.set(java.util.Calendar.MILLISECOND, 0);
+                                WeekUtils.setSemesterStart(this, selected.getTimeInMillis());
+                                WeekUtils.setAcademicYear(this, parsedAcademicYear);
+                                WeekUtils.setSemester(this, parsedSemester);
+                                showPreview();
+                            },
+                            cal.get(java.util.Calendar.YEAR),
+                            cal.get(java.util.Calendar.MONTH),
+                            cal.get(java.util.Calendar.DAY_OF_MONTH))
+                            .show();
+                })
+                .setCancelable(false)
+                .show();
     }
 
     private void showPreview() {
@@ -220,9 +286,14 @@ public class ImportTimetableActivity extends BaseActivity {
         btnConfirm.setEnabled(false);
 
         new Thread(() -> {
-            CourseDatabase db = CourseDatabase.getInstance(this);
-            db.courseDao().deleteAll();
-            db.courseDao().insertAll(parsedCourses);
+            DBManager db = new DBManager(this);
+            try {
+                db.deleteAllCourses();
+                db.insertCourses(parsedCourses);
+                db.ensureCourseAssistantTodoMessage();
+            } finally {
+                db.close();
+            }
 
             runOnUiThread(() -> {
                 Toast.makeText(this,
@@ -236,6 +307,8 @@ public class ImportTimetableActivity extends BaseActivity {
     private void resetToInitial() {
         parsedCourses = null;
         fileName = null;
+        parsedAcademicYear = 0;
+        parsedSemester = 0;
         tvStatus.setText(getString(R.string.import_timetable_hint));
         previewContainer.setVisibility(View.GONE);
         actionButtons.setVisibility(View.GONE);

@@ -6,4 +6,7 @@
     <item
         android:id="@+id/action_import_timetable"
         android:title="@string/import_menu_timetable" />
+    <item
+        android:id="@+id/action_import_easyhpc"
+        android:title="@string/import_menu_easyhpc" />
 </menu>

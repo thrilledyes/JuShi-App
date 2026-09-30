@@ -54,6 +54,9 @@ public final class NotificationMessageParser {
         if (packageName.contains("chaoxing")) {
             return "WEB";
         }
+        if ("com.huawei.easyhpc".equals(packageName)) {
+            return "EASYHPC";
+        }
         return "ANDROID";
     }
 

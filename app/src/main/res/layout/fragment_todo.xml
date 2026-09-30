@@ -1,134 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorSurface">
+    android:background="#F5F6F8">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/todoList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingVertical="8dp" />
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/todoEmptyState"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="24dp"
+        android:text="暂无待办\n自动识别到任务或手动新增后会显示在这里"
+        android:textColor="#7A7F87"
+        android:textSize="15sp"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/tvDDLCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ddl_remaining"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/colorOnSurface" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/overdue"
-                android:textAlignment="center"
-                android:textColor="@color/colorOverdue"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/urgent"
-                android:textAlignment="center"
-                android:textColor="@color/colorUrgent"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/pending"
-                android:textAlignment="center"
-                android:textColor="@color/colorPending"/>
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/todo_title"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/colorOnSurface"
-            android:layout_marginTop="20dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorSurface"
-            android:elevation="2dp"
-            android:padding="12dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:gravity="center"
-                android:text="@string/task_source_placeholder"
-                android:textStyle="bold"
-                android:background="@color/colorSecondSurface"
-                android:textColor="@color/colorSurface"/>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginStart="10dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/task_placeholder"
-                    android:textStyle="bold"
-                    android:textColor="@color/colorOnSurface"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/task_desc_placeholder"
-                    android:textColor="@color/colorTextSecondary"
-                    android:textSize="12sp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/task_pending"
-                    android:textSize="10sp"
-                    android:padding="4dp"
-                    android:background="@color/colorPending"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/task_time_placeholder"
-                    android:textColor="@color/colorOverdue"
-                    android:textStyle="bold"/>
-
-                <CheckBox
-                    android:id="@+id/cbTask1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-</ScrollView>
+</FrameLayout>
